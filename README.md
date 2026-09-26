@@ -1,10 +1,12 @@
 # Chain Reaction
 
-The explosive strategy game — in a single HTML file.
+The explosive strategy game — in a single HTML file. **by Divyanshu**
 
 **▶ Play:** https://di-ivyanshu.github.io/chain-reaction/
 
 - **Online with friends** — create a room, share the link or 5-letter code, up to 8 players. Peer-to-peer (WebRTC via PeerJS), no sign-up, no server.
+- **Chat** — talk to the room in the lobby and during the game.
+- **Undo** — take back your last move (online: before the next player moves; host can turn it off). Local games: unlimited undo, including the computer's reply.
 - **Turn timer** — Off / 15s / 30s / 60s. When time runs out a random move is played.
 - **Local** pass-and-play for 2–8 players, or **vs Computer** (Easy / Normal / Hard).
 - Auto-reconnect on refresh, spectators, rematch, emoji reactions, sound, mobile friendly.
