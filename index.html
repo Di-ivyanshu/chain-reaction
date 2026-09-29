@@ -150,7 +150,12 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .ov{position:fixed;inset:0;background:rgba(4,5,14,.76);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;z-index:10}
 .ov.on{opacity:1;visibility:visible;transition:opacity .2s,visibility 0s}
 .ov:not(.on),.screen:not(.on){pointer-events:none}
-#ov-confirm{z-index:13}
+#ov-confirm{z-index:14}
+#ov-menu{z-index:13}
+.mlist{display:flex;flex-direction:column;gap:8px}
+.chip.tap{cursor:pointer}
+.chip.tap:hover{border-color:rgba(255,255,255,.3)}
+@media (max-width:600px){.chat{left:0;right:0;width:auto;bottom:0;height:min(420px,50dvh);border-radius:18px 18px 0 0;border-bottom:0}}
 #ov-busy{z-index:11}
 .modal{width:100%;max-width:380px;background:#11142a;border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px;transform:scale(.94);transition:transform .25s cubic-bezier(.2,1.4,.4,1);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);max-height:calc(100dvh - 40px);overflow-y:auto}
 .ov.on .modal{transform:none}
@@ -164,8 +169,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .stats b{display:block;font-size:20px}
 .stats span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 #toasts{position:fixed;left:0;right:0;bottom:max(74px,calc(env(safe-area-inset-bottom) + 64px));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:20}
-.chat.on~#toasts{bottom:calc(min(480px,62dvh) + max(24px,calc(env(safe-area-inset-bottom) + 12px)))}
-#toasts{transition:bottom .18s}
+.chat.on~#toasts{top:max(64px,calc(env(safe-area-inset-top) + 56px));bottom:auto}
 .toast{background:#1b1f3b;border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transform:translateY(10px);transition:opacity .2s,transform .2s;box-shadow:0 10px 30px rgba(0,0,0,.45);max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:none}
 .confetti{position:fixed;top:-16px;width:8px;height:14px;border-radius:2px;z-index:11;pointer-events:none;animation:fall linear forwards}
@@ -305,6 +309,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
   <div class="spinner"></div>
   <p id="busy-t">Connecting…</p>
   <button class="btn sm ghost" id="busy-cancel">Cancel</button>
+</div></div>
+
+<div class="ov" id="ov-menu"><div class="modal">
+  <h3 id="m-title"></h3>
+  <p id="m-text"></p>
+  <div class="mlist" id="m-list"></div>
+  <button class="btn ghost" id="m-cancel">Cancel</button>
 </div></div>
 
 <div class="ov" id="ov-confirm"><div class="modal">
@@ -479,6 +490,17 @@ const EMOJIS = ['👍', '😂', '😮', '😡', '🔥', '👏'];
 const PEER_PREFIX = 'chainrx-dv1-';
 const CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const DROP_MS = 40000;
+const MAX_SKIPS = 3;
+function rmText(why, name, me) {
+  if (why === 'afk') return me ? "⏰ You missed 3 turns and were removed — you're watching now" : `⏰ ${name} missed 3 turns and was removed`;
+  if (why === 'kicked') return `🚫 ${name} was kicked by the host`;
+  if (why === 'resigned') return me ? "🏳️ You exited the game — you're watching now" : `🏳️ ${name} exited the game`;
+  return me ? 'You left the game' : `${name} left the game`;
+}
+function skipText(name, sk, me) {
+  if (me) return sk >= MAX_SKIPS - 1 ? "⏰ Time's up! Miss one more turn and you're out" : `⏰ Time's up — random move played (${sk}/${MAX_SKIPS} skips)`;
+  return `⏰ ${name} ran out of time (${sk}/${MAX_SKIPS})`;
+}
 const ICE = { iceServers: [
   { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
   { urls: 'stun:stun.cloudflare.com:3478' },
@@ -543,6 +565,18 @@ function dialog(title, text, yes, no, danger) {
     $('#c-row').style.gridTemplateColumns = no ? '' : '1fr';
     dlgDone = v => { dlgDone = null; ov('confirm', false); res(v); };
     ov('confirm', true);
+  });
+}
+let menuDone = null;
+function menu(title, text, items) {
+  if (menuDone) menuDone(null);
+  return new Promise(res => {
+    $('#m-title').textContent = title;
+    $('#m-text').textContent = text || '';
+    $('#m-text').classList.toggle('hidden', !text);
+    $('#m-list').innerHTML = items.map(it => `<button class="btn ${it.cls || ''}" data-k="${it.k}">${esc(it.label)}</button>`).join('');
+    menuDone = v => { menuDone = null; ov('menu', false); res(v); };
+    ov('menu', true);
   });
 }
 async function copyText(t) {
@@ -849,7 +883,8 @@ function updateHUD() {
     const col = COLORS[p.c];
     const me = G.mode !== 'local' && k === G.mySeat;
     const off = G.mode !== 'local' && G.presence && G.presence[k] === false && !p.out;
-    h += `<div class="chip${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null ? ' 🤖' : ''}</span><b>${counts[k]}</b></div>`;
+    const tap = G.mode === 'host' && k !== G.mySeat && !p.left;
+    h += `<div data-k="${k}" title="${tap ? 'Tap to kick' : ''}" class="chip${tap ? ' tap' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null ? ' 🤖' : ''}</span><b>${counts[k]}</b></div>`;
   });
   el.innerHTML = h;
   const on = el.querySelector('.chip.on');
@@ -1083,6 +1118,7 @@ $('#b-resume').onclick = () => {
 
 /* ---------- navigation ---------- */
 function goHome() {
+  if (menuDone) menuDone(null);
   clearTimeout(G.botT); clearTimeout(G.turnT); G.turnEnd = 0;
   chatToggle(false); chatReset([]);
   ['win', 'busy', 'rules'].forEach(o => ov(o, false));
@@ -1106,6 +1142,8 @@ $('#b-bot').onclick = () => {
 $('#b-rules').onclick = () => ov('rules', true);
 $('#r-ok').onclick = () => ov('rules', false);
 $('#c-yes').onclick = () => dlgDone && dlgDone(true);
+$('#m-list').onclick = e => { const b = e.target.closest('[data-k]'); if (b && menuDone) menuDone(b.dataset.k); };
+$('#m-cancel').onclick = () => menuDone && menuDone(null);
 $('#c-no').onclick = () => dlgDone && dlgDone(false);
 $('#busy-cancel').onclick = () => { const f = busyCancel; busyOff(); if (f) f(); };
 document.querySelectorAll('.ov').forEach(o => o.addEventListener('pointerdown', e => {
@@ -1114,6 +1152,7 @@ document.querySelectorAll('.ov').forEach(o => o.addEventListener('pointerdown', 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if ($('#ov-confirm').classList.contains('on')) dlgDone && dlgDone(false);
+  else if (menuDone) menuDone(null);
   else if (Chat.open) chatToggle(false);
   else if ($('#ov-rules').classList.contains('on')) ov('rules', false);
 });
@@ -1134,9 +1173,27 @@ $('#g-sound').onclick = () => { Snd.on = !Snd.on; store.set('cr_snd', Snd.on); u
 updSound();
 $('#g-menu').onclick = async () => {
   if (G.mode === 'local') { saveLocal(); goHome(); if (L.state && L.state.winner < 0) toast('Game saved — resume anytime'); return; }
-  if (G.mode === 'host') { if (await dialog('End the game?', 'This closes the room for everyone.', 'Close room', 'Cancel', true)) Host.close(); }
-  else if (G.mode === 'client') { if (await dialog('Leave the game?', 'You will be removed from this game.', 'Leave', 'Cancel', true)) Client.leave(); }
-  else goHome();
+  if (G.mode !== 'host' && G.mode !== 'client') { goHome(); return; }
+  const s = V.s, host = G.mode === 'host';
+  const playing = !!s && s.winner < 0 && G.mySeat >= 0 && !s.pl[G.mySeat].out;
+  const items = [];
+  if (playing) items.push({ k: 'resign', label: '🏳️ Exit game & watch', cls: 'primary' });
+  items.push(host ? { k: 'close', label: '🚪 Close room for everyone', cls: 'danger' } : { k: 'leave', label: '🚪 Leave room', cls: 'danger' });
+  const text = playing
+    ? "Exit this game but stay in the room to watch and chat — you'll play the next round. Or leave completely."
+    : host ? 'Closing the room disconnects everyone.' : 'Leave this room?';
+  const k = await menu(playing ? 'Exit game' : 'Leave', text, items);
+  if (k === 'resign') { if (host) Host.resign(CID); else Client.send({ t: 'resign' }); }
+  else if (k === 'close') Host.close();
+  else if (k === 'leave') Client.leave();
+};
+$('#g-chips').onclick = async e => {
+  if (G.mode !== 'host') return;
+  const c = e.target.closest('.chip.tap'); if (!c || !V.s) return;
+  const k = +c.dataset.k, p = V.s.pl[k];
+  if (!p || k === G.mySeat) return;
+  const r = await menu(p.name, 'Remove this player from the room? They won\'t be able to rejoin.', [{ k: 'kick', label: '🚫 Kick ' + p.name, cls: 'danger' }]);
+  if (r === 'kick' && G.mode === 'host') Host.kickSeat(k);
 };
 $('#g-foot').innerHTML = EMOJIS.map(e => `<button data-e="${e}" aria-label="React ${e}">${e}</button>`).join('') + '<button class="cbtn chat-open" data-n="0" aria-label="Open chat">💬</button>';
 let lastEmoji = 0;
@@ -1184,9 +1241,19 @@ function chatReset(list) {
   (Array.isArray(list) ? list : []).forEach(m => chatAdd(m, true));
   chatBadge();
 }
+function chatFit() {
+  const c = $('#chat'), vv = window.visualViewport;
+  const kb = vv && Chat.open ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
+  if (kb > 60) {
+    c.style.bottom = kb + 'px';
+    c.style.height = Math.round(Math.min(420, vv.height * .5)) + 'px';
+  } else { c.style.bottom = ''; c.style.height = ''; }
+}
+if (window.visualViewport) { visualViewport.addEventListener('resize', chatFit); visualViewport.addEventListener('scroll', chatFit); }
 function chatToggle(on) {
   Chat.open = on;
   $('#chat').classList.toggle('on', on);
+  chatFit();
   if (on) {
     Chat.unread = 0; chatBadge();
     const box = $('#chat-list'); box.scrollTop = box.scrollHeight;
@@ -1302,6 +1369,7 @@ $('#lobby-back').onclick = async () => {
 
 const Host = {
   peer: null, code: '', conns: new Map(), order: [], phase: 'lobby', grid: 'm', seats: [], presence: [], state: null,
+  skips: [], banned: new Set(),
   rmTimers: new Map(), emT: new Map(), chT: new Map(), pids: new Map(), chatLog: [], prev: null, allowUndo: true, hb: 0, opened: false,
   pidOf(cid) { let p = this.pids.get(cid); if (!p) { p = rid(8); this.pids.set(cid, p); } return p; },
   cidOf(pid) { for (const [c, p] of this.pids) if (p === pid) return c; return null; },
@@ -1360,6 +1428,7 @@ const Host = {
     clearInterval(this.hb); this.hb = 0;
     clearTimeout(this.tt); this.deadline = 0;
     this.rmTimers.forEach(t => clearTimeout(t)); this.rmTimers.clear();
+    this.skips = []; this.banned = new Set();
     this.conns.clear(); this.emT.clear(); this.chT.clear(); this.pids.clear(); this.chatLog = []; this.prev = null;
     this.order = []; this.seats = []; this.presence = []; this.state = null; this.phase = 'lobby'; this.opened = false;
     this.peer = null;
@@ -1393,6 +1462,7 @@ const Host = {
       else if (d.t === 'chat') this.chat(cid, d.text);
       else if (d.t === 'undo') { if (!this.undo(this.phase === 'game' ? this.seats.indexOf(cid) : -1)) send(conn, { t: 'nack' }); }
       else if (d.t === 'leave') this.leaveMsg(cid);
+      else if (d.t === 'resign') this.resign(cid);
     });
     conn.on('close', () => { if (cid) this.lost(cid, conn); });
     conn.on('error', () => { if (cid) this.lost(cid, conn); });
@@ -1400,6 +1470,7 @@ const Host = {
   hello(conn, cid, name) {
     name = cleanName(name) || 'Player';
     if (cid === CID) { send(conn, { t: 'bye', r: 'dup' }); return; }
+    if (this.banned.has(cid)) { send(conn, { t: 'bye', r: 'kicked' }); setTimeout(() => { try { conn.close(); } catch (e) {} }, 600); return; }
     const ex = this.conns.get(cid);
     if (this.phase === 'lobby' && !ex && !this.order.includes(cid) && this.order.length >= 8) {
       send(conn, { t: 'bye', r: 'full' }); setTimeout(() => { try { conn.close(); } catch (e) {} }, 600); return;
@@ -1450,6 +1521,7 @@ const Host = {
   },
   kick(pid) {
     const cid = this.cidOf(pid); if (!cid || cid === CID) return;
+    this.banned.add(cid);
     const m = this.conns.get(cid);
     if (m) { send(m.conn, { t: 'bye', r: 'kicked' }); this.conns.delete(cid); const c = m.conn; setTimeout(() => { try { c.close(); } catch (e) {} }, 400); }
     const k = this.order.indexOf(cid);
@@ -1457,18 +1529,34 @@ const Host = {
   },
   dropSeat(cid) {
     clearTimeout(this.rmTimers.get(cid)); this.rmTimers.delete(cid);
-    if (this.phase !== 'game' || !this.state || this.conns.has(cid)) return;
-    const seat = this.seats.indexOf(cid);
-    if (seat < 0 || this.state.pl[seat].out || this.state.winner >= 0) return;
-    const prevTurn = this.state.turn, prevDeadline = this.deadline;
-    this.state = removePlayer(this.state, seat);
+    if (this.conns.has(cid)) return;
+    this.removeSeat(this.seats.indexOf(cid), 'left');
+  },
+  // take a player out of the running game; why: left | afk | kicked | resigned
+  removeSeat(seat, why) {
+    const s = this.state;
+    if (this.phase !== 'game' || !s || seat < 0 || seat >= s.pl.length || s.pl[seat].out || s.winner >= 0) return;
+    const cid = this.seats[seat];
+    clearTimeout(this.rmTimers.get(cid)); this.rmTimers.delete(cid);
+    const prevTurn = s.turn, prevDeadline = this.deadline;
+    this.state = removePlayer(s, seat);
     this.state.ud = -1; this.prev = null;
     this.arm(0, this.state.turn === prevTurn ? prevDeadline : 0);
-    this.presence[seat] = false;
-    this.broadcast({ t: 'rm', p: seat, state: this.state, presence: this.presence });
+    if (cid !== CID && !this.conns.has(cid)) this.presence[seat] = false;
+    this.broadcast({ t: 'rm', p: seat, r: why, state: this.state, presence: this.presence });
     G.presence = this.presence;
-    toast(`${this.state.pl[seat].name} left the game`);
+    toast(rmText(why, this.state.pl[seat].name, seat === G.mySeat), 3200);
     pushEvent({ k: 'sync', final: this.state });
+  },
+  resign(cid) { if (this.phase === 'game') this.removeSeat(this.seats.indexOf(cid), 'resigned'); },
+  kickSeat(seat) {
+    const cid = this.seats[seat];
+    if (!cid || cid === CID || !this.state) return;
+    this.banned.add(cid);
+    const m = this.conns.get(cid);
+    if (m) { send(m.conn, { t: 'bye', r: 'kicked' }); this.conns.delete(cid); const c = m.conn; setTimeout(() => { try { c.close(); } catch (e) {} }, 400); }
+    if (!this.state.pl[seat].out && this.state.winner < 0) this.removeSeat(seat, 'kicked');
+    else { this.presence[seat] = false; this.pushPresence(); toast(rmText('kicked', this.state.pl[seat].name, false)); }
   },
   pushPresence() { G.presence = this.presence; this.broadcast({ t: 'presence', presence: this.presence }); if (screen === 'game') updateHUD(); },
   lobbyPlayers() { return this.order.map(cid => ({ pid: this.pidOf(cid), name: cid === CID ? myName() : ((this.conns.get(cid) || {}).name || 'Player') })); },
@@ -1492,7 +1580,7 @@ const Host = {
     this.presence = this.seats.map(() => true);
     const names = this.lobbyPlayers().map(p => p.name);
     this.state = newGame(g.r, g.c, names.map((n, k) => ({ name: n, c: k })), this.timer, this.allowUndo);
-    this.phase = 'game'; this.prev = null;
+    this.phase = 'game'; this.prev = null; this.skips = [];
     this.broadcast({ t: 'start', state: this.state, seats: this.pubSeats(), presence: this.presence });
     G.mySeat = 0; G.presence = this.presence;
     this.arm(0);
@@ -1506,14 +1594,15 @@ const Host = {
     }
     this.apply(i, false);
   },
-  apply(i, auto) {
+  apply(i, auto, sk) {
     const s = this.state;
+    if (!auto) this.skips[s.turn] = 0;
     const r = applyMove(s, i, true);
     r.s.ud = !auto && r.s.undo && r.s.winner < 0 ? s.turn : -1;
     this.prev = r.s.ud >= 0 ? s : null;
     this.state = r.s;
-    this.broadcast({ t: 'mv', i, state: r.s, auto });
-    if (auto) toast('⏰ ' + s.pl[s.turn].name + ' ran out of time');
+    this.broadcast({ t: 'mv', i, state: r.s, auto, sk: sk || 0 });
+    if (auto) toast(skipText(s.pl[s.turn].name, sk || 0, s.turn === G.mySeat), 3000);
     pushEvent({ k: 'move', pre: s, i, final: r.s, waves: r.waves });
     this.arm(animEstimate(r.waves));
   },
@@ -1525,8 +1614,11 @@ const Host = {
     this.deadline = until || Date.now() + animMs + s.tsec * 1000 + 900;
     this.tt = setTimeout(() => {
       if (this.state !== s || this.phase !== 'game') return;
+      const seat = s.turn;
+      this.skips[seat] = (this.skips[seat] || 0) + 1;
+      if (this.skips[seat] >= MAX_SKIPS) { this.removeSeat(seat, 'afk'); return; }
       const i = randomMove(s);
-      if (i >= 0) this.apply(i, true);
+      if (i >= 0) this.apply(i, true, this.skips[seat]);
     }, Math.max(0, this.deadline - Date.now()));
   },
   // take back the last move; only the player who made it, and only before the next move
@@ -1719,7 +1811,7 @@ const Client = {
       case 'mv':
         if (!validState(d.state)) return;
         G.pending = false;
-        if (d.auto && this.state && this.state.pl[this.state.turn]) toast('⏰ ' + (this.state.turn === G.mySeat ? 'You' : this.state.pl[this.state.turn].name) + ' ran out of time');
+        if (d.auto && this.state && this.state.pl[this.state.turn]) toast(skipText(this.state.pl[this.state.turn].name, d.sk | 0, this.state.turn === G.mySeat), 3000);
         if (this.state && d.state.gid === this.state.gid && d.state.seq === this.state.seq + 1 && isLegal(this.state, d.i)) {
           const pre = this.state; this.state = d.state;
           pushEvent({ k: 'move', pre, i: d.i, final: d.state, waves: applyMove(pre, d.i, true).waves });
@@ -1728,7 +1820,7 @@ const Client = {
       case 'rm':
         if (!validState(d.state)) return;
         this.state = d.state; G.presence = d.presence || G.presence;
-        if (d.state.pl[d.p]) toast(d.p === G.mySeat ? 'You were removed from the game' : `${d.state.pl[d.p].name} left the game`);
+        if (d.state.pl[d.p]) toast(rmText(String(d.r || 'left'), d.state.pl[d.p].name, d.p === G.mySeat), 3200);
         pushEvent({ k: 'sync', final: d.state });
         break;
       case 'sync': {
@@ -1783,7 +1875,7 @@ refreshResume();
   if (ss.get('cr_room') === room) Client.join(room);
   else if (!store.get('cr_name', '')) setTimeout(() => $('#s-online .name-in').focus(), 300);
 })();
-window.__cr = { V, G, L, Host, Client, CID };
+window.__cr = { V, G, L, Host, Client, CID, chatFit };
 </script>
 </body>
 </html>
