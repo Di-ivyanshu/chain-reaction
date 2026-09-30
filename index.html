@@ -11,11 +11,16 @@
 <meta property="og:description" content="Explode. Capture. Conquer. Tap the link to join the room.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='.35' cy='.3'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.3' stop-color='%23ff8aa0'/%3E%3Cstop offset='1' stop-color='%23c0102f'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='26' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chain Reaction">
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://0.peerjs.com" crossorigin>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#070914;--card:rgba(255,255,255,.045);--card2:rgba(255,255,255,.075);--line:rgba(255,255,255,.09);--text:#eef1ff;--muted:#8f97bd;--a1:#7c5cff;--a2:#22c6f0;--pc:#7c5cff}
+:root{--bg:#070914;--card:rgba(255,255,255,.045);--card2:rgba(255,255,255,.075);--line:rgba(255,255,255,.09);--text:#eef1ff;--muted:#8f97bd;--a1:#7c5cff;--a2:#22c6f0;--pc:#7c5cff;--hov:rgba(255,255,255,.11);--row:rgba(255,255,255,.035);--modal:#11142a;--toast:#1b1f3b;--scrim:rgba(4,5,14,.76);--ph:#5d6488;--segbg:rgba(0,0,0,.25);--inbg:rgba(255,255,255,.05)}
 html,body{height:100%;background:var(--bg);color:var(--text);font:15px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
 body{background:radial-gradient(900px 520px at 0% 0%,rgba(124,92,255,.22),transparent 60%),radial-gradient(800px 500px at 100% 100%,rgba(34,198,240,.15),transparent 60%),var(--bg)}
 input,select{user-select:text;-webkit-user-select:text}
@@ -34,11 +39,11 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .tag{text-align:center;color:var(--muted);margin-top:-6px;letter-spacing:.06em}
 .field{display:flex;flex-direction:column;gap:6px}
 .field>span{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
-.in{height:50px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);padding:0 16px;font:inherit;font-size:16px;outline:none;transition:border-color .15s,background .15s;width:100%}
+.in{height:50px;border-radius:14px;border:1px solid var(--line);background:var(--inbg);color:var(--text);padding:0 16px;font:inherit;font-size:16px;outline:none;transition:border-color .15s,background .15s;width:100%}
 .in:focus{border-color:rgba(124,92,255,.85);background:rgba(124,92,255,.08)}
-.in::placeholder{color:#5d6488}
+.in::placeholder{color:var(--ph)}
 .btn{height:52px;border-radius:14px;padding:0 18px;font-weight:700;font-size:16px;background:var(--card2);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s ease,background .15s,opacity .15s,filter .15s;white-space:nowrap}
-.btn:hover{background:rgba(255,255,255,.11)}
+.btn:hover{background:var(--hov)}
 .btn:active{transform:scale(.97)}
 .btn.primary{background:linear-gradient(135deg,var(--a1),var(--a2));border-color:transparent;box-shadow:0 8px 24px -8px rgba(124,92,255,.75)}
 .btn.primary:hover{filter:brightness(1.1)}
@@ -51,7 +56,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .link:hover{color:var(--text)}
 .hidden{display:none!important}
 .icon{width:42px;height:42px;border-radius:12px;background:var(--card2);border:1px solid var(--line);display:grid;place-items:center;font-size:17px;flex:none;transition:transform .12s,background .15s}
-.icon:hover{background:rgba(255,255,255,.11)}
+.icon:hover{background:var(--hov)}
 .icon:active{transform:scale(.92)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px}
 .bar h2{font-size:20px}
@@ -72,14 +77,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .linkbox{display:flex;gap:8px;width:100%}
 .linkbox .in{flex:1;min-width:0;height:40px;font-size:13px;color:var(--muted);border-radius:12px;padding:0 12px}
 .plist{list-style:none;display:flex;flex-direction:column;gap:8px}
-.plist li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--line);min-height:48px}
+.plist li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:var(--row);border:1px solid var(--line);min-height:48px}
 .plist li.new{animation:pop .25s ease}
 .plist li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .dot{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c);flex:none}
-.tagx{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.08);color:var(--muted);flex:none}
+.tagx{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--card2);color:var(--muted);flex:none}
 .kick{width:28px;height:28px;border-radius:8px;color:var(--muted);flex:none}
 .kick:hover{background:rgba(255,59,92,.15);color:#ff6b81}
-.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:rgba(0,0,0,.25);padding:4px;border-radius:12px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--segbg);padding:4px;border-radius:12px}
 .seg button{height:46px;border-radius:9px;font-weight:700;font-size:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;transition:background .15s,color .15s}
 .seg button small{font-weight:500;font-size:11px;opacity:.8}
 .seg button.on{background:var(--card2);color:var(--text);box-shadow:inset 0 0 0 1px rgba(124,92,255,.65)}
@@ -89,14 +94,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .stepper button{width:34px;height:34px;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:18px;font-weight:700;line-height:1}
 .stepper b{min-width:18px;text-align:center;font-size:16px}
 .plist .in{height:38px;font-size:15px;flex:1;min-width:0;padding:0 10px;border-radius:10px}
-.sel{height:38px;border-radius:10px;background:#141830;color:var(--text);border:1px solid var(--line);padding:0 6px;font:inherit;font-size:14px;outline:none;flex:none;max-width:44%}
+.sel{height:38px;border-radius:10px;background:var(--modal);color:var(--text);border:1px solid var(--line);padding:0 6px;font:inherit;font-size:14px;outline:none;flex:none;max-width:44%}
 .by{text-align:center;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-top:-8px;font-weight:600}
 .by a{text-decoration:none;font-weight:900;background:linear-gradient(90deg,#b9a8ff,#22c6f0);-webkit-background-clip:text;background-clip:text;color:transparent}
 .seg.two{grid-template-columns:1fr 1fr}
 .icon:disabled{opacity:.3;pointer-events:none}
 .cbtn{position:relative}
 .cbtn[data-n]:not([data-n="0"])::after{content:attr(data-n);position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;border-radius:10px;background:#ff3b5c;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 5px;box-shadow:0 0 0 2px var(--bg)}
-.chat{position:fixed;z-index:12;right:12px;bottom:max(12px,env(safe-area-inset-bottom));width:min(360px,calc(100vw - 24px));height:min(480px,62dvh);background:#11142a;border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;box-shadow:0 30px 80px -20px rgba(0,0,0,.9);opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .18s,transform .18s,visibility 0s linear .18s}
+.chat{position:fixed;z-index:12;right:12px;bottom:max(12px,env(safe-area-inset-bottom));width:min(360px,calc(100vw - 24px));height:min(480px,62dvh);background:var(--modal);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;box-shadow:0 30px 80px -20px rgba(0,0,0,.9);opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .18s,transform .18s,visibility 0s linear .18s}
 .chat.on{opacity:1;visibility:visible;transform:none;transition:opacity .18s,transform .18s,visibility 0s}
 .chat-h{display:flex;align-items:center;justify-content:space-between;padding:10px 10px 10px 16px;border-bottom:1px solid var(--line)}
 .chat-h .icon{width:34px;height:34px;font-size:14px}
@@ -110,7 +115,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .chat-in{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
 .chat-in .in{height:42px;font-size:15px;border-radius:12px;padding:0 12px;flex:1;min-width:0}
 .chat-in .btn{height:42px;flex:none}
-.foot{text-align:center;color:#5d6488;font-size:12px}
+.foot{text-align:center;color:var(--ph);font-size:12px}
 .foot a{color:inherit}
 @keyframes pop{from{opacity:0;transform:scale(.96)}}
 /* game */
@@ -130,7 +135,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .turn .dot{--c:var(--pc);width:10px;height:10px;transition:background .25s,box-shadow .25s}
 .turn.mine #g-turn-t{animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.6}}
-.tbar{visibility:hidden;height:3px;width:min(260px,60vw);margin:0 auto 2px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;flex:none}
+.tbar{visibility:hidden;height:3px;width:min(260px,60vw);margin:0 auto 2px;border-radius:3px;background:var(--line);overflow:hidden;flex:none}
 .tbar i{display:block;height:100%;background:var(--pc);transform-origin:left center;will-change:transform}
 .tbar.warn i{background:#ff3b5c}
 #g-tsec{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700}
@@ -147,22 +152,22 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .fl small{font-size:11px;font-weight:800;background:rgba(0,0,0,.6);padding:2px 7px;border-radius:99px;color:var(--c)}
 @keyframes up{0%{transform:translateY(20px) scale(.5);opacity:0}15%{transform:translateY(0) scale(1.15);opacity:1}100%{transform:translateY(-260px) scale(1);opacity:0}}
 /* overlays */
-.ov{position:fixed;inset:0;background:rgba(4,5,14,.76);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;z-index:10}
+.ov{position:fixed;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;z-index:10}
 .ov.on{opacity:1;visibility:visible;transition:opacity .2s,visibility 0s}
 .ov:not(.on),.screen:not(.on),.chat:not(.on){pointer-events:none}
 #ov-confirm{z-index:14}
 #ov-menu{z-index:13}
 .mlist{display:flex;flex-direction:column;gap:8px}
 .chip.tap{cursor:pointer}
-.chip.tap:hover{border-color:rgba(255,255,255,.3)}
+.chip.tap:hover{border-color:var(--muted)}
 @media (max-width:600px){.chat{left:0;right:0;width:auto;bottom:0;height:min(420px,50dvh);border-radius:18px 18px 0 0;border-bottom:0}}
 #ov-busy{z-index:11}
-.modal{width:100%;max-width:380px;background:#11142a;border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px;transform:scale(.94);transition:transform .25s cubic-bezier(.2,1.4,.4,1);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);max-height:calc(100dvh - 40px);overflow-y:auto}
+.modal{width:100%;max-width:380px;background:var(--modal);border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px;transform:scale(.94);transition:transform .25s cubic-bezier(.2,1.4,.4,1);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);max-height:calc(100dvh - 40px);overflow-y:auto}
 .ov.on .modal{transform:none}
 .modal h2,.modal h3{text-align:center}
 .modal>p{text-align:center;color:var(--muted)}
-.spinner{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:var(--a2);animation:spin .8s linear infinite;margin:4px auto}
-.win-orb{width:84px;height:84px;border-radius:50%;margin:4px auto;background:radial-gradient(circle at 35% 30%,#fff 0 7%,var(--c) 48%,#000 135%);box-shadow:0 0 50px var(--c);animation:float 2.4s ease-in-out infinite}
+.spinner{width:42px;height:42px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--a2);animation:spin .8s linear infinite;margin:4px auto}
+.win-orb{display:grid;place-items:center;font-size:42px;line-height:1;width:84px;height:84px;border-radius:50%;margin:4px auto;background:radial-gradient(circle at 35% 30%,#fff 0 7%,var(--c) 48%,#000 135%);box-shadow:0 0 50px var(--c);animation:float 2.4s ease-in-out infinite}
 @keyframes float{50%{transform:translateY(-6px) scale(1.04)}}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .stats div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center}
@@ -170,12 +175,12 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .stats span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 #toasts{position:fixed;left:0;right:0;bottom:max(74px,calc(env(safe-area-inset-bottom) + 64px));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:20}
 .chat.on~#toasts{top:max(64px,calc(env(safe-area-inset-top) + 56px));bottom:auto}
-.toast{background:#1b1f3b;border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transform:translateY(10px);transition:opacity .2s,transform .2s;box-shadow:0 10px 30px rgba(0,0,0,.45);max-width:90vw;text-align:center}
+.toast{background:var(--toast);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transform:translateY(10px);transition:opacity .2s,transform .2s;box-shadow:0 10px 30px rgba(0,0,0,.45);max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:none}
 .confetti{position:fixed;top:-16px;width:8px;height:14px;border-radius:2px;z-index:11;pointer-events:none;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(112vh) rotate(760deg)}}
 .rules{gap:10px}
-.rules ol{padding-left:20px;display:flex;flex-direction:column;gap:7px;color:#c9cfee;font-size:14px}
+.rules ol{padding-left:20px;display:flex;flex-direction:column;gap:7px;color:var(--text);font-size:14px}
 .rules b{color:var(--text)}
 .capgrid{display:grid;grid-template-columns:repeat(4,34px);gap:3px;justify-content:center;margin:2px 0}
 .capgrid span{height:34px;border-radius:7px;background:var(--card2);display:grid;place-items:center;font-weight:800;font-size:13px}
@@ -184,6 +189,57 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .pill.bad{background:rgba(255,59,92,.15);color:#ff6b81}
 @media (hover:none){.btn:hover,.icon:hover{background:var(--card2)}.btn.primary:hover{filter:none}.btn.ghost:hover{background:transparent}}
 @media (prefers-reduced-motion:reduce){.logo,.win-orb{animation:none}.screen{transition:opacity .15s,visibility 0s}}
+/* colour & avatar picker, teams, quick chat */
+.look{width:34px;height:34px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:18px;line-height:1;flex:none}
+button.look{cursor:pointer;transition:transform .12s}
+button.look:active{transform:scale(.9)}
+.look.mine{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.swatches{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+.swatches button{aspect-ratio:1;border-radius:50%;background:var(--c);border:3px solid transparent;transition:transform .12s}
+.swatches button.on{border-color:var(--text);transform:scale(1.08)}
+.swatches button:disabled{opacity:.18;cursor:not-allowed}
+.avatars{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.avatars button{aspect-ratio:1;border-radius:10px;font-size:21px;line-height:1;display:grid;place-items:center;background:var(--card2);border:2px solid transparent}
+.avatars button.on{border-color:var(--c);background:var(--hov)}
+.pick-prev{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700}
+.pick-prev .look{width:48px;height:48px;font-size:26px}
+.team{font-size:10px;font-weight:900;padding:1px 6px;border-radius:6px;background:var(--card2);color:var(--muted);letter-spacing:.04em}
+.qchat{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 0;scrollbar-width:none;flex:none}
+.qchat::-webkit-scrollbar{display:none}
+.qchat button{flex:none;padding:6px 11px;border-radius:99px;background:var(--card2);border:1px solid var(--line);font-size:13px;white-space:nowrap;transition:transform .12s}
+.qchat button:active{transform:scale(.94)}
+.themes{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.themes button{padding:7px 12px;border-radius:99px;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);display:flex;align-items:center;gap:7px;transition:background .15s,color .15s}
+.themes button.on{color:var(--text);border-color:var(--muted);background:var(--card2)}
+.themes i{width:11px;height:11px;border-radius:50%}
+.th-neon{background:linear-gradient(135deg,#7c5cff,#22c6f0)}
+.th-matte{background:#2a2b31;box-shadow:inset 0 0 0 1px #55565e}
+.th-paper{background:#f3f1ec;box-shadow:inset 0 0 0 1px #b9b6ae}
+/* matte themes: flat, no glow, no gradients */
+body.flat{background:var(--bg)}
+body.t-matte{--bg:#16171b;--card:#1d1e23;--card2:#26272d;--line:#2f3037;--text:#ececef;--muted:#8d8f99;--hov:#2e2f36;--row:#1d1e23;--modal:#1d1e23;--toast:#2a2b31;--scrim:rgba(0,0,0,.6);--acc:#ececef;--acc-t:#16171b;--ph:#6b6d77;--segbg:#131417;--inbg:#1d1e23}
+body.t-paper{--bg:#f3f1ec;--card:#ffffff;--card2:#ebe8e1;--line:rgba(0,0,0,.09);--text:#1c1c1e;--muted:#6f6f75;--hov:#e2dfd7;--row:#faf9f6;--modal:#ffffff;--toast:#1c1c1e;--scrim:rgba(30,28,24,.35);--acc:#1c1c1e;--acc-t:#ffffff;--ph:#a3a3a8;--segbg:#e7e4dd;--inbg:#ffffff}
+body.flat .btn.primary{background:var(--acc);color:var(--acc-t);box-shadow:none}
+body.flat .btn.primary:hover{filter:none;opacity:.9}
+body.flat .btn.danger{background:#d64545;color:#fff}
+body.flat .title span,body.flat .bigcode,body.flat .by a{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--text)}
+body.flat .title{color:var(--muted)}
+body.flat .logo{animation-duration:12s}
+body.flat .logo i{box-shadow:none}
+body.flat .logo i:nth-child(1){background:var(--p0)}
+body.flat .logo i:nth-child(2){background:var(--p1)}
+body.flat .logo i:nth-child(3){background:var(--p2)}
+body.flat .dot,body.flat .chip i{box-shadow:none}
+body.flat .win-orb{background:var(--c);box-shadow:none}
+body.flat .msg.me span{background:var(--acc);color:var(--acc-t)}
+body.flat .seg button.on{box-shadow:inset 0 0 0 1px var(--muted)}
+body.flat .in:focus{border-color:var(--muted);background:var(--inbg)}
+body.flat .card.hl{border-color:var(--muted);box-shadow:none}
+body.flat .modal,body.flat .chat{box-shadow:0 20px 50px -24px rgba(0,0,0,.4)}
+body.flat .toast{box-shadow:none}
+body.t-paper .toast{color:#fff}
+body.t-paper .pill{background:rgba(47,158,91,.12);color:#23804a}
+body.t-paper .pill.bad{background:rgba(214,69,69,.12);color:#b83a3a}
 </style>
 </head>
 <body>
@@ -198,7 +254,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
     <button class="btn primary" id="b-online">🌐 Play online with friends</button>
     <div class="row2"><button class="btn" id="b-local">👥 Local game</button><button class="btn" id="b-bot">🤖 vs Computer</button></div>
     <button class="btn ghost hidden" id="b-resume">▶ Resume last local game</button>
+    <button class="btn ghost hidden" id="b-install">📲 Install app</button>
     <button class="link" id="b-rules">How to play</button>
+    <div class="themes" id="themes" aria-label="Theme"></div>
     <p class="foot">Share a link — friends join instantly. No sign-up.</p>
   </div>
 </section>
@@ -232,7 +290,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
       <button class="btn sm ghost" id="b-share">📤 Share invite</button>
     </div>
     <div class="card">
-      <div class="card-h"><h3>Players</h3><span class="muted" id="l-count">1/8</span></div>
+      <div class="card-h"><h3>Players <span class="muted" id="l-count">1/8</span></h3><button class="btn sm ghost" id="b-look">🎨 My look</button></div>
       <ul class="plist" id="l-players"></ul>
     </div>
     <div class="card">
@@ -242,6 +300,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
       <div class="seg" id="l-timer"></div>
       <h3>Undo</h3>
       <div class="seg two" id="l-undo"></div>
+      <h3>Teams</h3>
+      <div class="seg two" id="l-teams"></div>
     </div>
     <button class="btn ghost cbtn chat-open" data-n="0">💬 Chat with the room</button>
     <button class="btn primary" id="b-start">Start game</button>
@@ -261,6 +321,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
       <div class="seg" id="loc-grid"></div>
       <h3>Turn timer</h3>
       <div class="seg" id="loc-timer"></div>
+      <h3>Teams</h3>
+      <div class="seg two" id="loc-teams"></div>
     </div>
     <button class="btn primary" id="b-loc-start">Start game</button>
   </div>
@@ -285,6 +347,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
   <h2 id="w-title"></h2>
   <p id="w-sub"></p>
   <div class="stats" id="w-stats"></div>
+  <button class="btn sm ghost" id="w-share">📸 Share result</button>
   <div class="row2"><button class="btn primary" id="w-again">Play again</button><button class="btn" id="w-alt">Home</button></div>
   <p class="muted center" id="w-wait"></p>
   <button class="link" id="w-leave"></button>
@@ -318,6 +381,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
   <button class="btn ghost" id="m-cancel">Cancel</button>
 </div></div>
 
+<div class="ov" id="ov-pick"><div class="modal">
+  <h3 id="pk-title">Colour &amp; avatar</h3>
+  <div class="pick-prev" id="pk-prev"></div>
+  <div class="swatches" id="pk-colors"></div>
+  <div class="avatars" id="pk-avs"></div>
+  <button class="btn primary" id="pk-done">Done</button>
+</div></div>
+
 <div class="ov" id="ov-confirm"><div class="modal">
   <h3 id="c-title"></h3>
   <p id="c-text"></p>
@@ -327,6 +398,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 <div class="chat" id="chat" role="dialog" aria-label="Chat">
   <div class="chat-h"><b>💬 Chat</b><button class="icon" id="chat-x" aria-label="Close chat">✕</button></div>
   <div class="chat-list" id="chat-list"><p class="chat-empty">No messages yet — say hi 👋</p></div>
+  <div class="qchat" id="qchat"></div>
   <form class="chat-in" id="chat-form" autocomplete="off"><input class="in" id="chat-text" maxlength="200" placeholder="Type a message…" enterkeyhint="send" spellcheck="true"><button class="btn primary sm" type="submit">Send</button></form>
 </div>
 
@@ -352,16 +424,18 @@ function nbrs(rows, cols) {
   NB_CACHE.set(key, a);
   return a;
 }
-function newGame(rows, cols, players, tsec, undo) {
+// teams: when true, each player's .t is their team (0 or 1); otherwise every player is their own team
+function newGame(rows, cols, players, tsec, undo, teams) {
   const N = rows * cols;
   return {
     gid: Math.random().toString(36).slice(2, 10), rows, cols,
     o: new Array(N).fill(-1), n: new Array(N).fill(0),
     turn: 0, winner: -1, moves: 0, maxChain: 0, seq: 0, tsec: tsec > 0 ? tsec | 0 : 0, undo: !!undo, ud: -1,
-    pl: players.map(p => ({ name: p.name, c: p.c, bot: p.bot == null ? null : p.bot, moved: false, out: false, left: false }))
+    teams: !!teams, lm: -1, lp: -1,
+    pl: players.map((p, k) => ({ name: p.name, c: p.c, av: p.av || '', t: teams ? p.t | 0 : k, bot: p.bot == null ? null : p.bot, moved: false, out: false, left: false }))
   };
 }
-function cloneState(s) { return { ...s, o: s.o.slice(), n: s.n.slice(), pl: s.pl.map(p => ({ ...p })) }; }
+function cloneState(s) { return { ...s, o: s.o.slice(), n: s.n.slice(), pl: s.pl.map((p, k) => ({ ...p, t: p.t == null ? k : p.t })) }; }
 function isLegal(s, i) { return s.winner < 0 && i >= 0 && i < s.o.length && (s.o[i] === -1 || s.o[i] === s.turn); }
 function orbCounts(s) {
   const c = new Array(s.pl.length).fill(0);
@@ -373,28 +447,38 @@ function nextAlive(s, p) {
   for (let d = 1; d <= L; d++) { const q = (p + d) % L; if (!s.pl[q].out) return q; }
   return p;
 }
-// marks eliminated players; returns true once a single player is left
+// marks eliminated players; returns true once a single team (or player) is left
 function settle(s) {
-  const c = orbCounts(s);
-  let alive = 0, last = -1;
+  const c = orbCounts(s), teams = new Set();
+  let best = -1;
   for (let k = 0; k < s.pl.length; k++) {
     const p = s.pl[k];
     if (!p.out && p.moved && c[k] === 0) p.out = true;
-    if (!p.out) { alive++; last = k; }
+    if (!p.out) { teams.add(p.t); if (best < 0 || c[k] > c[best]) best = k; }
   }
-  if (alive <= 1 && s.pl.length > 1) { s.winner = last; return true; }
+  if (teams.size <= 1 && s.pl.length > 1) { s.winner = best; return true; }
   return false;
 }
 function applyMove(s0, i, record) {
-  const s = cloneState(s0), p = s.turn, NB = nbrs(s.rows, s.cols), waves = [];
-  s.o[i] = p; s.n[i]++; s.pl[p].moved = true; s.moves++;
+  const s = cloneState(s0), p = s.turn, NB = nbrs(s.rows, s.cols), waves = [], pl = s.pl;
+  s.o[i] = p; s.n[i]++; pl[p].moved = true; s.moves++; s.lm = i; s.lp = p;
   let front = s.n[i] >= NB[i].length ? [i] : [], w = 0;
   const mark = new Int32Array(s.o.length);
   while (front.length && w < 20000) {
     w++;
+    const own = front.map(k => s.o[k]);
     for (const k of front) { s.n[k] -= NB[k].length; if (s.n[k] <= 0) { s.n[k] = 0; s.o[k] = -1; } }
     const next = [];
-    for (const k of front) for (const j of NB[k]) { s.n[j]++; s.o[j] = p; if (mark[j] !== w) { mark[j] = w; next.push(j); } }
+    // an explosion captures its neighbours for the cell's owner, except cells owned by a teammate
+    for (let f = 0; f < front.length; f++) {
+      const k = front[f], ok = own[f], tk = pl[ok].t;
+      for (const j of NB[k]) {
+        s.n[j]++;
+        const oj = s.o[j];
+        if (oj < 0 || pl[oj].t !== tk) s.o[j] = ok;
+        if (mark[j] !== w) { mark[j] = w; next.push(j); }
+      }
+    }
     for (const k of front) if (mark[k] !== w) { mark[k] = w; next.push(k); }
     if (record) waves.push({ ex: front, o: s.o.slice(), n: s.n.slice() });
     if (settle(s)) break;
@@ -418,9 +502,9 @@ function removePlayer(s0, k) {
   return s;
 }
 function evalState(s, me) {
-  if (s.winner === me) return 1e7;
-  if (s.winner >= 0 || s.pl[me].out) return -1e7;
-  const NB = nbrs(s.rows, s.cols), N = s.o.length;
+  if (s.winner >= 0) return s.pl[s.winner].t === s.pl[me].t ? 1e7 : -1e7;
+  if (s.pl[me].out) return -1e7;
+  const NB = nbrs(s.rows, s.cols), N = s.o.length, myT = s.pl[me].t;
   let sc = 0, mine = 0;
   for (let i = 0; i < N; i++) {
     if (s.o[i] !== me) continue;
@@ -429,7 +513,7 @@ function evalState(s, me) {
     let vuln = false;
     for (const j of NB[i]) {
       const oj = s.o[j];
-      if (oj >= 0 && oj !== me && s.n[j] === NB[j].length - 1) { vuln = true; sc -= 5 - cap; }
+      if (oj >= 0 && s.pl[oj].t !== myT && s.n[j] === NB[j].length - 1) { vuln = true; sc -= 5 - cap; }
     }
     if (!vuln) {
       if (cap === 2) sc += 3; else if (cap === 3) sc += 2;
@@ -483,7 +567,20 @@ function randomMove(s) {
 
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
-const COLORS = ['#ff3b5c', '#2bdc76', '#3d8bff', '#ffd23d', '#b25bff', '#22e1f0', '#ff8a2b', '#ff5bd1'];
+const PALETTES = {
+  neon: ['#ff3b5c', '#2bdc76', '#3d8bff', '#ffd23d', '#b25bff', '#22e1f0', '#ff8a2b', '#ff5bd1'],
+  matte: ['#e5534b', '#57ab5a', '#539bf5', '#d4a72c', '#986ee2', '#39c5cf', '#e0823d', '#e275ad'],
+  paper: ['#d64545', '#2f9e5b', '#2f6fdb', '#c98a00', '#8250df', '#1a9aa8', '#d9661f', '#c9408a']
+};
+const THEMES = [{ id: 'neon', label: 'Neon' }, { id: 'matte', label: 'Matte Dark' }, { id: 'paper', label: 'Matte Light' }];
+let THEME = 'neon';
+let COLORS = PALETTES.neon;
+const AVATARS = ['😎', '🦊', '🐼', '🐯', '🐸', '🐙', '🦄', '🐲', '👾', '🤖', '👻', '🎃', '🐧', '🦁', '🐵', '🐝'];
+const QUICK = ['Nice move! 👏', 'GG 🤝', 'Hurry up 😴', 'Oops 😅', 'Good luck 🍀', 'Rematch? 🔁', 'Wow 🤯', 'Haha 😂'];
+function validC(c) { return Number.isInteger(c) && c >= 0 && c < 8; }
+function validAv(a) { return AVATARS.includes(a); }
+function teamName(t) { return 'Team ' + 'AB'[t & 1]; }
+function teamsOk(n) { return n >= 4 && n % 2 === 0; }
 const GRIDS = [{ id: 's', label: 'Small', r: 7, c: 5 }, { id: 'm', label: 'Classic', r: 9, c: 6 }, { id: 'l', label: 'Large', r: 12, c: 8 }, { id: 'x', label: 'Huge', r: 15, c: 10 }];
 const TIMERS = [0, 15, 30, 60];
 const EMOJIS = ['👍', '😂', '😮', '😡', '🔥', '👏'];
@@ -636,23 +733,34 @@ const V = {
 };
 const G = { mode: null, mySeat: -1, presence: null, pending: false, pendT: 0, idleKey: '', botT: 0, turnT: 0, turnEnd: 0, nextTl: 0, tsecShown: -1 };
 
-function buildSprites() {
-  const R = V.R * V.dpr, key = Math.round(R * 10);
-  if (V.spKey === key && V.sprites.length) return;
-  V.spKey = key;
-  V.sprites = COLORS.map(hex => {
-    const pad = R * .8, S = Math.max(4, Math.ceil((R + pad) * 2)), c = document.createElement('canvas');
-    c.width = c.height = S;
-    const g = c.getContext('2d'), m = S / 2;
-    let gr = g.createRadialGradient(m, m, R * .5, m, m, R + pad);
+// one orb image; neon = glossy with glow, matte themes = flat with soft light
+function makeOrb(hex, R, theme) {
+  const flat = theme !== 'neon';
+  const pad = flat ? Math.max(1, R * .08) : R * .8, S = Math.max(4, Math.ceil((R + pad) * 2)), c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d'), m = S / 2;
+  let gr;
+  if (!flat) {
+    gr = g.createRadialGradient(m, m, R * .5, m, m, R + pad);
     gr.addColorStop(0, rgba(hex, .5)); gr.addColorStop(.45, rgba(hex, .16)); gr.addColorStop(1, rgba(hex, 0));
     g.fillStyle = gr; g.fillRect(0, 0, S, S);
     gr = g.createRadialGradient(m - R * .38, m - R * .42, R * .05, m, m, R);
     gr.addColorStop(0, '#ffffff'); gr.addColorStop(.2, mix(hex, '#ffffff', .5)); gr.addColorStop(.62, hex); gr.addColorStop(1, mix(hex, '#000000', .55));
     g.fillStyle = gr; g.beginPath(); g.arc(m, m, R, 0, Math.PI * 2); g.fill();
     g.fillStyle = 'rgba(255,255,255,.5)'; g.beginPath(); g.ellipse(m - R * .3, m - R * .46, R * .3, R * .15, -.55, 0, Math.PI * 2); g.fill();
-    return c;
-  });
+  } else {
+    gr = g.createRadialGradient(m - R * .35, m - R * .4, R * .1, m, m, R);
+    gr.addColorStop(0, mix(hex, '#ffffff', .2)); gr.addColorStop(.7, hex); gr.addColorStop(1, mix(hex, '#000000', .16));
+    g.fillStyle = gr; g.beginPath(); g.arc(m, m, R, 0, Math.PI * 2); g.fill();
+    if (theme === 'paper') { g.strokeStyle = 'rgba(0,0,0,.14)'; g.lineWidth = Math.max(1, R * .06); g.beginPath(); g.arc(m, m, R - g.lineWidth / 2, 0, Math.PI * 2); g.stroke(); }
+  }
+  return c;
+}
+function buildSprites() {
+  const R = V.R * V.dpr, key = THEME + Math.round(R * 10);
+  if (V.spKey === key && V.sprites.length) return;
+  V.spKey = key;
+  V.sprites = COLORS.map(hex => makeOrb(hex, R, THEME));
 }
 function layout() {
   if (!V.s) return;
@@ -699,11 +807,22 @@ function draw(t) {
     if (k >= 1 || V.bad.i >= s.o.length) V.bad = null;
     else { ctx.fillStyle = `rgba(255,59,92,${.35 * (1 - k)})`; ctx.fillRect((V.bad.i % cols) * cs, (V.bad.i / cols | 0) * cs, cs, cs); }
   }
+  // last move: soft outline in the mover's colour
+  const hl = V.cur ? V.cur : (s.lm >= 0 && s.lp >= 0 && s.lp < s.pl.length ? { i: s.lm, p: s.lp } : null);
+  if (hl && hl.i < s.o.length && s.pl[hl.p]) {
+    const hc = hexRgb(COLORS[s.pl[hl.p].c]).join(','), x = (hl.i % cols) * cs, y = (hl.i / cols | 0) * cs;
+    ctx.fillStyle = `rgba(${hc},${THEME === 'neon' ? .1 : .12})`; ctx.fillRect(x, y, cs, cs);
+    ctx.strokeStyle = `rgba(${hc},.65)`; ctx.lineWidth = 2; ctx.strokeRect(x + 4, y + 4, cs - 8, cs - 8);
+  }
   ctx.beginPath();
   for (let c = 0; c <= cols; c++) { const x = Math.min(Math.max(c * cs, 1), W - 1); ctx.moveTo(x, 0); ctx.lineTo(x, H); }
   for (let r = 0; r <= rows; r++) { const y = Math.min(Math.max(r * cs, 1), H - 1); ctx.moveTo(0, y); ctx.lineTo(W, y); }
-  ctx.lineWidth = 5; ctx.strokeStyle = `rgba(${lr},${lg},${lb},.1)`; ctx.stroke();
-  ctx.lineWidth = 1.25; ctx.strokeStyle = `rgba(${lr},${lg},${lb},.7)`; ctx.stroke();
+  if (THEME === 'neon') {
+    ctx.lineWidth = 5; ctx.strokeStyle = `rgba(${lr},${lg},${lb},.1)`; ctx.stroke();
+    ctx.lineWidth = 1.25; ctx.strokeStyle = `rgba(${lr},${lg},${lb},.7)`; ctx.stroke();
+  } else {
+    ctx.lineWidth = 1; ctx.strokeStyle = `rgba(${lr},${lg},${lb},${THEME === 'paper' ? .5 : .42})`; ctx.stroke();
+  }
   const R = V.R, sh = cs * .014, ts = t * .001;
   for (let i = 0; i < V.n.length; i++) {
     const n = V.n[i], ow = V.o[i];
@@ -780,9 +899,11 @@ function stepAnim(t, fast) {
     if (ev.w >= 0) { const wv = ev.waves[ev.w]; V.o = wv.o.slice(); V.n = wv.n.slice(); V.fly.length = 0; }
     ev.w++;
     if (ev.w < ev.waves.length) {
-      const wv = ev.waves[ev.w], NB = nbrs(V.s.rows, V.s.cols), col = V.s.pl[ev.p].c;
+      const wv = ev.waves[ev.w], NB = nbrs(V.s.rows, V.s.cols);
       const dur = waveDur(ev.w, ev.waves.length - ev.w, V.queue.length > 0);
       for (const k of wv.ex) {
+        // in team games a teammate's cell can explode, so colour by the cell's owner
+        const ow = V.o[k], col = V.s.pl[ow >= 0 ? ow : ev.p].c;
         V.n[k] -= NB[k].length;
         if (V.n[k] <= 0) { V.n[k] = 0; V.o[k] = -1; }
         const x = cx(k), y = cy(k);
@@ -884,7 +1005,7 @@ function updateHUD() {
     const me = G.mode !== 'local' && k === G.mySeat;
     const off = G.mode !== 'local' && G.presence && G.presence[k] === false && !p.out;
     const tap = G.mode === 'host' && k !== G.mySeat && !p.left;
-    h += `<div data-k="${k}" title="${tap ? 'Tap to kick' : ''}" class="chip${tap ? ' tap' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null ? ' 🤖' : ''}</span><b>${counts[k]}</b></div>`;
+    h += `<div data-k="${k}" title="${tap ? 'Tap to kick' : ''}" class="chip${tap ? ' tap' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${p.av ? p.av + ' ' : ''}${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null && !p.av ? ' 🤖' : ''}</span>${s.teams ? `<span class="team">${'AB'[p.t & 1]}</span>` : ''}<b>${counts[k]}</b></div>`;
   });
   el.innerHTML = h;
   const on = el.querySelector('.chip.on');
@@ -892,7 +1013,7 @@ function updateHUD() {
   const tp = s.pl[s.winner >= 0 ? s.winner : s.turn], col = COLORS[tp.c];
   $('#s-game').style.setProperty('--pc', col);
   let t, mine = false;
-  if (s.winner >= 0) t = `${tp.name} wins!`;
+  if (s.winner >= 0) t = s.teams ? `${teamName(tp.t)} wins!` : `${tp.name} wins!`;
   else if (G.mode === 'local') {
     if (tp.bot != null) t = `${tp.name} is thinking…`;
     else if (humanCount(s) === 1) { t = 'Your turn'; mine = true; }
@@ -902,6 +1023,7 @@ function updateHUD() {
     const off = G.presence && G.presence[s.turn] === false;
     t = (G.mySeat < 0 ? 'Watching · ' : '') + `${tp.name}'s turn` + (off ? ' — reconnecting…' : '');
   }
+  if (s.teams && s.winner < 0) t += ' · ' + teamName(tp.t);
   $('#g-turn-t').textContent = t;
   $('#g-turn').classList.toggle('mine', mine);
   V.lineTarget = hexRgb(col);
@@ -999,11 +1121,18 @@ function confetti(col) {
 function showWin(s) {
   const p = s.pl[s.winner], col = COLORS[p.c];
   $('#ov-win .modal').style.setProperty('--c', col);
-  let title = `${p.name} wins!`, sub = 'Total domination.', iWon = false;
+  $('#ov-win .win-orb').textContent = s.teams ? '🏆' : (p.av || '');
+  const mates = s.teams ? s.pl.filter(x => x.t === p.t).map(x => x.name).join(' & ') : '';
+  let title = s.teams ? `${teamName(p.t)} wins!` : `${p.name} wins!`, sub = s.teams ? mates : 'Total domination.', iWon = false;
+  const youWin = s.teams ? 'Your team wins! 🎉' : 'You win! 🎉';
   if (G.mode === 'local') {
-    if (humanCount(s) === 1) { iWon = p.bot == null; title = iWon ? 'You win! 🎉' : `${p.name} wins`; sub = iWon ? 'You conquered the board.' : 'Better luck next time.'; }
-    else iWon = true;
-  } else if (s.winner === G.mySeat) { iWon = true; title = 'You win! 🎉'; sub = 'You conquered the board.'; }
+    const humans = s.pl.filter(x => x.bot == null);
+    if (humans.length === 1) {
+      iWon = humans[0].t === p.t;
+      title = iWon ? youWin : (s.teams ? `${teamName(p.t)} wins` : `${p.name} wins`);
+      sub = iWon ? (s.teams ? mates : 'You conquered the board.') : 'Better luck next time.';
+    } else iWon = true;
+  } else if (G.mySeat >= 0 && s.pl[G.mySeat] && s.pl[G.mySeat].t === p.t) { iWon = true; title = youWin; sub = s.teams ? mates : 'You conquered the board.'; }
   else if (G.mySeat >= 0) sub = 'Better luck next time.';
   $('#w-title').textContent = title;
   $('#w-sub').textContent = sub;
@@ -1037,16 +1166,28 @@ if (!Array.isArray(LS.players)) LS.players = [];
 for (let k = 0; k < 8; k++) if (!LS.players[k] || typeof LS.players[k] !== 'object') LS.players[k] = { name: '', type: 'h' };
 LS.n = Math.min(8, Math.max(2, LS.n | 0));
 if (!TIMERS.includes(LS.timer)) LS.timer = 0;
+LS.teams = LS.teams === true;
+// every local player gets a unique colour and an avatar
+(() => {
+  const used = new Set();
+  LS.players.forEach((p, k) => { if (validC(p.c) && !used.has(p.c)) used.add(p.c); else p.c = -1; if (!validAv(p.av)) p.av = AVATARS[k]; });
+  LS.players.forEach(p => { if (p.c < 0) { let c = 0; while (used.has(c)) c++; p.c = c; used.add(c); } });
+})();
 function saveLS() { store.set('cr_lcfg', LS); }
 function renderLocal() {
   $('#pl-num').textContent = LS.n;
   $('#pl-minus').disabled = LS.n <= 2; $('#pl-plus').disabled = LS.n >= 8;
   const opts = [['h', 'Human'], ['b0', 'Bot · Easy'], ['b1', 'Bot · Normal'], ['b2', 'Bot · Hard']];
   $('#loc-players').innerHTML = LS.players.slice(0, LS.n).map((p, k) =>
-    `<li><span class="dot" style="--c:${COLORS[k]}"></span><input class="in" data-k="${k}" maxlength="16" placeholder="${p.type !== 'h' ? 'Bot ' + (k + 1) : k === 0 ? esc(myName()) : 'Player ' + (k + 1)}" value="${esc(p.name)}" spellcheck="false"><select class="sel" data-k="${k}">${opts.map(o => `<option value="${o[0]}"${o[0] === p.type ? ' selected' : ''}>${o[1]}</option>`).join('')}</select></li>`).join('');
+    `<li><button class="look" data-look="${k}" style="--c:${COLORS[p.c]}" aria-label="Change colour and avatar" title="Change colour & avatar">${p.av}</button>${LS.teams ? `<span class="team">${'AB'[k & 1]}</span>` : ''}<input class="in" data-k="${k}" maxlength="16" placeholder="${p.type !== 'h' ? 'Bot ' + (k + 1) : k === 0 ? esc(myName()) : 'Player ' + (k + 1)}" value="${esc(p.name)}" spellcheck="false"><select class="sel" data-k="${k}">${opts.map(o => `<option value="${o[0]}"${o[0] === p.type ? ' selected' : ''}>${o[1]}</option>`).join('')}</select></li>`).join('');
   $('#loc-grid').innerHTML = segHTML(LS.grid);
   $('#loc-timer').innerHTML = timerSegHTML(LS.timer);
+  $('#loc-teams').innerHTML = teamSegHTML(LS.teams);
+  const bad = LS.teams && !teamsOk(LS.n), st = $('#b-loc-start');
+  st.disabled = bad;
+  st.textContent = bad ? 'Teams need 4, 6 or 8 players' : 'Start game';
 }
+function teamSegHTML(on) { return `<button data-tm="0" class="${on ? '' : 'on'}">Off<small>every player for themselves</small></button><button data-tm="1" class="${on ? 'on' : ''}">2 teams<small>A vs B · 4, 6 or 8 players</small></button>`; }
 function timerSegHTML(sel) { return TIMERS.map(v => `<button data-t="${v}" class="${v === sel ? 'on' : ''}">${v ? v + 's' : 'Off'}<small>${v ? 'per turn' : 'no limit'}</small></button>`).join(''); }
 function segHTML(sel) { return GRIDS.map(g => `<button data-g="${g.id}" class="${g.id === sel ? 'on' : ''}">${g.label}<small>${g.c}×${g.r}</small></button>`).join(''); }
 $('#loc-players').addEventListener('input', e => {
@@ -1059,6 +1200,22 @@ $('#loc-players').addEventListener('change', e => {
 });
 $('#pl-minus').onclick = () => { if (LS.n > 2) { LS.n--; saveLS(); renderLocal(); } };
 $('#pl-plus').onclick = () => { if (LS.n < 8) { LS.n++; saveLS(); renderLocal(); } };
+$('#loc-teams').onclick = e => { const b = e.target.closest('button'); if (!b) return; LS.teams = b.dataset.tm === '1'; saveLS(); renderLocal(); };
+$('#loc-players').addEventListener('click', e => {
+  const b = e.target.closest('[data-look]'); if (!b) return;
+  const k = +b.dataset.look, me = LS.players[k];
+  openPicker({
+    title: cleanName(me.name) || (k === 0 && me.type === 'h' ? myName() : (me.type === 'h' ? 'Player ' : 'Bot ') + (k + 1)),
+    c: me.c, av: me.av, taken: new Set(), swap: true,
+    onPick(c, av) {
+      // picking another player's colour swaps the two
+      const other = LS.players.findIndex((q, j) => j !== k && q.c === c);
+      if (other >= 0) LS.players[other].c = me.c;
+      me.c = c; me.av = av;
+      saveLS(); renderLocal();
+    }
+  });
+});
 $('#loc-timer').onclick = e => { const b = e.target.closest('button'); if (!b) return; LS.timer = +b.dataset.t; saveLS(); renderLocal(); };
 $('#loc-grid').onclick = e => { const b = e.target.closest('button'); if (!b) return; LS.grid = b.dataset.g; saveLS(); renderLocal(); };
 $('#b-loc-start').onclick = () => {
@@ -1066,15 +1223,17 @@ $('#b-loc-start').onclick = () => {
     const bot = p.type === 'h' ? null : +p.type[1];
     let name = cleanName(p.name);
     if (!name) name = bot != null ? (LS.n === 2 ? 'Computer' : 'Bot ' + (k + 1)) : (k === 0 ? myName() : 'Player ' + (k + 1));
-    return { name, bot };
+    return { name, bot, c: p.c, av: p.av };
   });
-  localStart({ grid: LS.grid, timer: LS.timer, players });
+  if (LS.teams && !teamsOk(LS.n)) { toast('Team mode needs 4, 6 or 8 players'); return; }
+  localStart({ grid: LS.grid, timer: LS.timer, teams: LS.teams, players });
 };
 function localStart(cfg) {
   G.mode = 'local'; G.mySeat = -1; G.presence = null;
   L.cfg = cfg;
   const g = gridById(cfg.grid);
-  L.state = newGame(g.r, g.c, cfg.players.map((p, k) => ({ name: p.name, c: k, bot: p.bot })), cfg.timer || 0, true);
+  const teams = !!cfg.teams && teamsOk(cfg.players.length);
+  L.state = newGame(g.r, g.c, cfg.players.map((p, k) => ({ name: p.name, c: validC(p.c) ? p.c : k, av: validAv(p.av) ? p.av : '', t: k & 1, bot: p.bot })), cfg.timer || 0, true, teams);
   L.hist = [];
   saveLocal();
   beginGame(L.state);
@@ -1111,8 +1270,8 @@ $('#b-resume').onclick = () => {
   const sv = store.get('cr_local', null);
   if (!(sv && sv.cfg && validState(sv.state))) { refreshResume(); return; }
   G.mode = 'local'; G.mySeat = -1; G.presence = null;
-  L.cfg = sv.cfg; L.state = sv.state;
-  L.hist = Array.isArray(sv.hist) ? sv.hist.filter(h => validState(h) && h.gid === sv.state.gid) : [];
+  L.cfg = sv.cfg; L.state = cloneState(sv.state);
+  L.hist = Array.isArray(sv.hist) ? sv.hist.filter(h => validState(h) && h.gid === sv.state.gid).map(cloneState) : [];
   beginGame(L.state);
 };
 
@@ -1121,7 +1280,8 @@ function goHome() {
   if (menuDone) menuDone(null);
   clearTimeout(G.botT); clearTimeout(G.turnT); G.turnEnd = 0;
   chatToggle(false); chatReset([]);
-  ['win', 'busy', 'rules'].forEach(o => ov(o, false));
+  pick = null;
+  ['win', 'busy', 'rules', 'pick'].forEach(o => ov(o, false));
   clearConfetti();
   G.mode = null; G.mySeat = -1; G.presence = null; G.pending = false;
   V.queue.length = 0; V.cur = null;
@@ -1153,6 +1313,7 @@ document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if ($('#ov-confirm').classList.contains('on')) dlgDone && dlgDone(false);
   else if (menuDone) menuDone(null);
+  else if (pick) { pick = null; ov('pick', false); }
   else if (Chat.open) chatToggle(false);
   else if ($('#ov-rules').classList.contains('on')) ov('rules', false);
 });
@@ -1210,8 +1371,8 @@ function chatMsgEl(m) {
   const d = document.createElement('div');
   const me = m.pid === myPid();
   d.className = 'msg' + (me ? ' me' : '');
-  d.style.setProperty('--c', m.col);
-  const b = document.createElement('b'); b.textContent = me ? 'You' : m.name;
+  d.style.setProperty('--c', m.ci >= 0 ? COLORS[m.ci] : 'var(--muted)');
+  const b = document.createElement('b'); b.textContent = (m.av ? m.av + ' ' : '') + (me ? 'You' : m.name);
   const t = document.createElement('span'); t.textContent = m.text;
   d.append(b, t);
   return d;
@@ -1220,7 +1381,7 @@ function cleanMsg(m) {
   if (!m || typeof m !== 'object') return null;
   const text = String(m.text == null ? '' : m.text).replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 200);
   if (!text) return null;
-  return { name: cleanName(m.name) || 'Player', col: /^#[0-9a-f]{6}$/i.test(m.col) ? m.col : '#8f97bd', text, pid: String(m.pid || '') };
+  return { name: cleanName(m.name) || 'Player', ci: validC(m.ci) ? m.ci : -1, av: validAv(m.av) ? m.av : '', text, pid: String(m.pid || '') };
 }
 function chatAdd(m, silent) {
   m = cleanMsg(m); if (!m) return;
@@ -1233,7 +1394,7 @@ function chatAdd(m, silent) {
   if (silent) return;
   const mine = m.pid === myPid();
   if (!mine) Snd.tone(740, 980, .07, 'sine', .05);
-  if (!Chat.open && !mine) { Chat.unread++; chatBadge(); toast('💬 ' + m.name + ': ' + (m.text.length > 60 ? m.text.slice(0, 60) + '…' : m.text), 3000); }
+  if (!Chat.open && !mine) { Chat.unread++; chatBadge(); toast('💬 ' + (m.av ? m.av + ' ' : '') + m.name + ': ' + (m.text.length > 60 ? m.text.slice(0, 60) + '…' : m.text), 3000); }
 }
 function chatReset(list) {
   Chat.list = []; Chat.unread = 0;
@@ -1262,23 +1423,27 @@ function chatToggle(on) {
 }
 document.addEventListener('click', e => { if (e.target.closest('.chat-open')) chatToggle(!Chat.open); });
 $('#chat-x').onclick = () => chatToggle(false);
+function sendChat(text) {
+  if (G.mode === 'host') Host.chat(CID, text);
+  else if (G.mode === 'client') Client.send({ t: 'chat', text });
+  else return false;
+  return true;
+}
 $('#chat-form').onsubmit = e => {
   e.preventDefault();
   const inp = $('#chat-text'), text = inp.value.trim();
-  if (!text) return;
-  if (G.mode === 'host') Host.chat(CID, text);
-  else if (G.mode === 'client') Client.send({ t: 'chat', text });
-  else return;
-  inp.value = '';
+  if (text && sendChat(text)) inp.value = '';
 };
-function showEmoji(e, name, col) {
+$('#qchat').innerHTML = QUICK.map(q => `<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+$('#qchat').onclick = e => { const b = e.target.closest('[data-q]'); if (b) sendChat(b.dataset.q); };
+function showEmoji(e, name, ci) {
   if (screen !== 'game' || !EMOJIS.includes(e)) return;
   const box = $('#g-float');
   if (box.children.length > 14) box.firstChild.remove();
   const d = document.createElement('div');
   d.className = 'fl';
   d.style.left = (8 + Math.random() * 78) + '%';
-  d.style.setProperty('--c', /^#[0-9a-f]{6}$/i.test(col) ? col : '#ffffff');
+  d.style.setProperty('--c', validC(ci) ? COLORS[ci] : '#ffffff');
   d.append(document.createTextNode(e));
   const sm = document.createElement('small'); sm.textContent = cleanName(name); d.append(sm);
   box.append(d);
@@ -1324,12 +1489,14 @@ function roomLink(code) { return location.origin + location.pathname + '?room=' 
 function setNet(ok) { const p = $('#net-pill'); p.textContent = ok ? '● Online' : '● Reconnecting'; p.classList.toggle('bad', !ok); }
 
 let lobbySeen = new Set();
-function renderLobby(players, grid, isHost, code, timer, undo) {
+function renderLobby(players, grid, isHost, code, timer, undo, teams) {
+  G.lobby = players;
+  const mine = myPid();
   $('#l-code').textContent = code;
   $('#l-link').value = roomLink(code);
   $('#l-count').textContent = `${players.length}/8`;
   $('#l-players').innerHTML = players.map((p, k) =>
-    `<li class="${lobbySeen.has(p.pid) ? '' : 'new'}"><span class="dot" style="--c:${COLORS[k]}"></span><span class="nm">${esc(p.name)}</span>${k === 0 ? '<span class="tagx">HOST</span>' : ''}${p.pid === myPid() ? '<span class="tagx">YOU</span>' : ''}${isHost && k > 0 ? `<button class="kick" data-kick="${esc(p.pid)}" aria-label="Remove player">✕</button>` : ''}</li>`).join('') +
+    `<li class="${lobbySeen.has(p.pid) ? '' : 'new'}">${p.pid === mine ? `<button class="look mine" data-mylook style="--c:${COLORS[p.c]}" aria-label="Change your colour and avatar" title="Change colour & avatar">${p.av}</button>` : `<span class="look" style="--c:${COLORS[p.c]}">${p.av}</span>`}<span class="nm">${esc(p.name)}</span>${teams ? `<span class="team">${'AB'[k & 1]}</span>` : ''}${k === 0 ? '<span class="tagx">HOST</span>' : ''}${p.pid === myPid() ? '<span class="tagx">YOU</span>' : ''}${isHost && k > 0 ? `<button class="kick" data-kick="${esc(p.pid)}" aria-label="Remove player">✕</button>` : ''}</li>`).join('') +
     (players.length < 2 ? '<li class="muted" style="justify-content:center">Waiting for friends to join…</li>' : '');
   lobbySeen = new Set(players.map(p => p.pid));
   const seg = $('#l-grid');
@@ -1341,19 +1508,47 @@ function renderLobby(players, grid, isHost, code, timer, undo) {
   const us = $('#l-undo');
   us.innerHTML = `<button data-u="1" class="${undo ? 'on' : ''}">On<small>take back your last move</small></button><button data-u="0" class="${undo ? '' : 'on'}">Off<small>no take-backs</small></button>`;
   us.classList.toggle('ro', !isHost);
-  const st = $('#b-start');
+  const tm = $('#l-teams');
+  tm.innerHTML = teamSegHTML(teams);
+  tm.classList.toggle('ro', !isHost);
+  const st = $('#b-start'), badTeams = teams && !teamsOk(players.length);
   st.classList.toggle('hidden', !isHost);
-  st.disabled = players.length < 2;
-  st.textContent = players.length < 2 ? 'Need at least 2 players' : `Start game · ${players.length} players`;
+  st.disabled = players.length < 2 || badTeams;
+  st.textContent = players.length < 2 ? 'Need at least 2 players' : badTeams ? 'Teams need 4, 6 or 8 players' : `Start game · ${players.length} players${teams ? ' · 2 teams' : ''}`;
+  $('#b-look').classList.toggle('hidden', !players.some(p => p.pid === mine));
+  if (pick && pick.online) {
+    const me = players.find(p => p.pid === mine);
+    if (me) { pick.c = me.c; pick.av = me.av; }
+    pick.taken = new Set(players.filter(p => p.pid !== mine).map(p => p.c));
+    renderPicker();
+  }
   const inList = players.some(p => p.pid === myPid());
   $('#l-wait').classList.toggle('hidden', isHost);
   $('#l-wait').textContent = inList ? 'Waiting for the host to start…' : "Lobby is full — you'll watch the next game.";
 }
 function openLobby() { ov('win', false); clearConfetti(); busyOff(); show('lobby'); }
+$('#l-teams').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.teams = b.dataset.tm === '1'; Host.pushLobby(); } };
+function openMyLook() {
+  const pl = G.lobby || [], mine = myPid(), me = pl.find(p => p.pid === mine);
+  if (!me) return;
+  openPicker({
+    title: 'Your colour & avatar', c: me.c, av: me.av, online: true,
+    taken: new Set(pl.filter(p => p.pid !== mine).map(p => p.c)),
+    onPick(c, av) {
+      store.set('cr_look', { c, av });
+      if (G.mode === 'host') Host.setLook(CID, c, av);
+      else if (G.mode === 'client') Client.send({ t: 'look', c, av });
+    }
+  });
+}
+$('#b-look').onclick = openMyLook;
 $('#l-undo').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.allowUndo = b.dataset.u === '1'; Host.pushLobby(); } };
 $('#l-timer').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.timer = +b.dataset.t; Host.pushLobby(); } };
 $('#l-grid').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.grid = b.dataset.g; Host.pushLobby(); } };
-$('#l-players').onclick = e => { const b = e.target.closest('[data-kick]'); if (b && G.mode === 'host') Host.kick(b.dataset.kick); };
+$('#l-players').onclick = e => {
+  if (e.target.closest('[data-mylook]')) { openMyLook(); return; }
+  const b = e.target.closest('[data-kick]'); if (b && G.mode === 'host') Host.kick(b.dataset.kick);
+};
 $('#b-start').onclick = () => { if (G.mode === 'host') Host.start(); };
 $('#b-copy').onclick = async () => { toast(await copyText($('#l-link').value) ? 'Invite link copied!' : 'Copy failed — select the link manually'); };
 $('#l-code').onclick = async () => { toast(await copyText($('#l-code').textContent) ? 'Room code copied!' : 'Copy failed'); };
@@ -1369,7 +1564,7 @@ $('#lobby-back').onclick = async () => {
 
 const Host = {
   peer: null, code: '', conns: new Map(), order: [], phase: 'lobby', grid: 'm', seats: [], presence: [], state: null,
-  skips: [], banned: new Set(),
+  skips: [], banned: new Set(), looks: new Map(), teams: false,
   rmTimers: new Map(), emT: new Map(), chT: new Map(), pids: new Map(), chatLog: [], prev: null, allowUndo: true, hb: 0, opened: false,
   pidOf(cid) { let p = this.pids.get(cid); if (!p) { p = rid(8); this.pids.set(cid, p); } return p; },
   cidOf(pid) { for (const [c, p] of this.pids) if (p === pid) return c; return null; },
@@ -1384,7 +1579,10 @@ const Host = {
     this.timer = store.get('cr_timer', 30);
     if (!TIMERS.includes(this.timer)) this.timer = 30;
     this.allowUndo = store.get('cr_undo', true) !== false;
+    this.teams = store.get('cr_teams', false) === true;
     this.order = [CID];
+    const pref = store.get('cr_look', null) || {};
+    this.looks.set(CID, { c: validC(pref.c) ? pref.c : 0, av: validAv(pref.av) ? pref.av : AVATARS[Math.random() * AVATARS.length | 0] });
     chatReset([]);
     let tries = 0;
     const attempt = () => {
@@ -1428,7 +1626,7 @@ const Host = {
     clearInterval(this.hb); this.hb = 0;
     clearTimeout(this.tt); this.deadline = 0;
     this.rmTimers.forEach(t => clearTimeout(t)); this.rmTimers.clear();
-    this.skips = []; this.banned = new Set();
+    this.skips = []; this.banned = new Set(); this.looks = new Map();
     this.conns.clear(); this.emT.clear(); this.chT.clear(); this.pids.clear(); this.chatLog = []; this.prev = null;
     this.order = []; this.seats = []; this.presence = []; this.state = null; this.phase = 'lobby'; this.opened = false;
     this.peer = null;
@@ -1452,7 +1650,7 @@ const Host = {
     let cid = null;
     conn.on('data', d => {
       if (!d || typeof d !== 'object') return;
-      if (d.t === 'hello') { const c = String(d.cid || '').slice(0, 40); if (!c) return; cid = c; this.hello(conn, cid, d.name); return; }
+      if (d.t === 'hello') { const c = String(d.cid || '').slice(0, 40); if (!c) return; cid = c; this.hello(conn, cid, d.name, d.look); return; }
       if (!cid) return;
       const m = this.conns.get(cid);
       if (!m || m.conn !== conn) return;
@@ -1463,12 +1661,17 @@ const Host = {
       else if (d.t === 'undo') { if (!this.undo(this.phase === 'game' ? this.seats.indexOf(cid) : -1)) send(conn, { t: 'nack' }); }
       else if (d.t === 'leave') this.leaveMsg(cid);
       else if (d.t === 'resign') this.resign(cid);
+      else if (d.t === 'look') { if (this.phase === 'lobby') this.setLook(cid, Number(d.c), d.av); }
     });
     conn.on('close', () => { if (cid) this.lost(cid, conn); });
     conn.on('error', () => { if (cid) this.lost(cid, conn); });
   },
-  hello(conn, cid, name) {
+  hello(conn, cid, name, look) {
     name = cleanName(name) || 'Player';
+    if (!this.looks.has(cid)) {
+      const pref = look && typeof look === 'object' ? look : {};
+      this.looks.set(cid, { c: validC(pref.c) ? pref.c : -1, av: validAv(pref.av) ? pref.av : AVATARS[Math.random() * AVATARS.length | 0] });
+    }
     if (cid === CID) { send(conn, { t: 'bye', r: 'dup' }); return; }
     if (this.banned.has(cid)) { send(conn, { t: 'bye', r: 'kicked' }); setTimeout(() => { try { conn.close(); } catch (e) {} }, 600); return; }
     const ex = this.conns.get(cid);
@@ -1559,27 +1762,48 @@ const Host = {
     else { this.presence[seat] = false; this.pushPresence(); toast(rmText('kicked', this.state.pl[seat].name, false)); }
   },
   pushPresence() { G.presence = this.presence; this.broadcast({ t: 'presence', presence: this.presence }); if (screen === 'game') updateHUD(); },
-  lobbyPlayers() { return this.order.map(cid => ({ pid: this.pidOf(cid), name: cid === CID ? myName() : ((this.conns.get(cid) || {}).name || 'Player') })); },
+  // earlier joiners keep their colour; anyone clashing or without one gets the first free colour
+  fixLooks() {
+    const used = new Set();
+    for (const cid of this.order) {
+      let l = this.looks.get(cid);
+      if (!l) { l = { c: -1, av: AVATARS[Math.random() * AVATARS.length | 0] }; this.looks.set(cid, l); }
+      if (validC(l.c) && !used.has(l.c)) used.add(l.c); else l.c = -1;
+    }
+    for (const cid of this.order) { const l = this.looks.get(cid); if (l.c < 0) { let c = 0; while (used.has(c)) c++; l.c = c; used.add(c); } }
+  },
+  setLook(cid, c, av) {
+    const l = this.looks.get(cid); if (!l) return;
+    if (validAv(av)) l.av = av;
+    if (validC(c) && !this.order.some(o => o !== cid && (this.looks.get(o) || {}).c === c)) l.c = c;
+    if (this.phase === 'lobby') this.pushLobby();
+  },
+  lobbyPlayers() {
+    this.fixLooks();
+    return this.order.map(cid => { const l = this.looks.get(cid); return { pid: this.pidOf(cid), name: cid === CID ? myName() : ((this.conns.get(cid) || {}).name || 'Player'), c: l.c, av: l.av }; });
+  },
+  lobbyMsg() { return { t: 'lobby', players: this.lobbyPlayers(), grid: this.grid, code: this.code, timer: this.timer, undo: this.allowUndo, teams: this.teams }; },
   pushLobby() {
     if (this.phase !== 'lobby') return;
-    const players = this.lobbyPlayers();
-    this.broadcast({ t: 'lobby', players, grid: this.grid, code: this.code, timer: this.timer, undo: this.allowUndo });
-    renderLobby(players, this.grid, true, this.code, this.timer, this.allowUndo);
-    store.set('cr_grid', this.grid); store.set('cr_timer', this.timer); store.set('cr_undo', this.allowUndo);
+    const msg = this.lobbyMsg();
+    this.broadcast(msg);
+    renderLobby(msg.players, this.grid, true, this.code, this.timer, this.allowUndo, this.teams);
+    store.set('cr_grid', this.grid); store.set('cr_timer', this.timer); store.set('cr_undo', this.allowUndo); store.set('cr_teams', this.teams);
   },
   sendSync(cid) {
     const m = this.conns.get(cid); if (!m) return;
-    if (this.phase === 'lobby') send(m.conn, { t: 'lobby', players: this.lobbyPlayers(), grid: this.grid, code: this.code, timer: this.timer, undo: this.allowUndo });
+    if (this.phase === 'lobby') send(m.conn, this.lobbyMsg());
     else send(m.conn, { t: 'sync', state: this.state, seats: this.pubSeats(), presence: this.presence, tl: this.deadline ? Math.max(0, this.deadline - Date.now() - 900) : 0 });
   },
   pubSeats() { return this.seats.map(c => this.pidOf(c)); },
   start() {
     if (this.phase !== 'lobby' || this.order.length < 2) return;
+    if (this.teams && !teamsOk(this.order.length)) { toast('Team mode needs 4, 6 or 8 players'); return; }
     const g = gridById(this.grid);
     this.seats = this.order.slice(0, 8);
     this.presence = this.seats.map(() => true);
-    const names = this.lobbyPlayers().map(p => p.name);
-    this.state = newGame(g.r, g.c, names.map((n, k) => ({ name: n, c: k })), this.timer, this.allowUndo);
+    const pls = this.lobbyPlayers();
+    this.state = newGame(g.r, g.c, pls.map((p, k) => ({ name: p.name, c: p.c, av: p.av, t: k & 1 })), this.timer, this.allowUndo, this.teams);
     this.phase = 'game'; this.prev = null; this.skips = [];
     this.broadcast({ t: 'start', state: this.state, seats: this.pubSeats(), presence: this.presence });
     G.mySeat = 0; G.presence = this.presence;
@@ -1635,7 +1859,7 @@ const Host = {
     return true;
   },
   chat(cid, text) {
-    const m = cleanMsg({ text, name: 'x', col: '#000000', pid: 'x' });
+    const m = cleanMsg({ text, name: 'x', pid: 'x' });
     if (!m) return;
     const now = Date.now();
     // burst of 5 messages, refilling one every 700ms
@@ -1644,11 +1868,11 @@ const Host = {
     if (b.n < 1) return;
     b.n--; this.chT.set(cid, b);
     const seat = this.phase === 'game' ? this.seats.indexOf(cid) : -1;
-    if (seat >= 0) { m.name = this.state.pl[seat].name; m.col = COLORS[this.state.pl[seat].c]; }
+    if (seat >= 0) { const p = this.state.pl[seat]; m.name = p.name; m.ci = p.c; m.av = p.av || ''; }
     else {
-      const k = this.order.indexOf(cid);
+      const l = this.order.includes(cid) ? this.looks.get(cid) : null;
       m.name = cid === CID ? myName() : ((this.conns.get(cid) || {}).name || 'Player');
-      m.col = k >= 0 ? COLORS[k] : '#8f97bd';
+      m.ci = l ? l.c : -1; m.av = l ? l.av : '';
     }
     m.pid = this.pidOf(cid);
     this.chatLog.push(m); if (this.chatLog.length > 50) this.chatLog.shift();
@@ -1662,9 +1886,9 @@ const Host = {
     this.emT.set(cid, now);
     const seat = this.seats.indexOf(cid);
     const name = seat >= 0 ? this.state.pl[seat].name : cid === CID ? myName() : ((this.conns.get(cid) || {}).name || '?');
-    const col = seat >= 0 ? COLORS[this.state.pl[seat].c] : '#ffffff';
-    this.broadcast({ t: 'emoji', e, name, col });
-    showEmoji(e, name, col);
+    const ci = seat >= 0 ? this.state.pl[seat].c : -1;
+    this.broadcast({ t: 'emoji', e, name, ci });
+    showEmoji(e, name, ci);
   },
   toLobby() {
     this.rmTimers.forEach(t => clearTimeout(t)); this.rmTimers.clear();
@@ -1721,7 +1945,7 @@ const Client = {
         if (token !== this.token) return;
         opened = true; clearTimeout(this.connTimer);
         this.last = Date.now();
-        send(conn, { t: 'hello', cid: CID, name: myName() });
+        send(conn, { t: 'hello', cid: CID, name: myName(), look: store.get('cr_look', null) });
       });
       conn.on('data', d => { if (token !== this.token) return; this.last = Date.now(); this.onData(d); });
       conn.on('close', () => fail('closed'));
@@ -1799,7 +2023,7 @@ const Client = {
       case 'lobby':
         if (!Array.isArray(d.players)) return;
         G.pending = false; this.phase = 'lobby'; this.state = null; G.mySeat = -1;
-        renderLobby(d.players.map(p => ({ pid: String(p.pid), name: cleanName(p.name) || 'Player' })), gridById(d.grid).id, false, this.code, TIMERS.includes(d.timer) ? d.timer : 0, d.undo !== false);
+        renderLobby(d.players.slice(0, 8).map((p, k) => ({ pid: String(p.pid), name: cleanName(p.name) || 'Player', c: validC(p.c) ? p.c : k, av: validAv(p.av) ? p.av : AVATARS[0] })), gridById(d.grid).id, false, this.code, TIMERS.includes(d.timer) ? d.timer : 0, d.undo !== false, d.teams === true);
         if (screen !== 'lobby') openLobby();
         break;
       case 'start':
@@ -1845,7 +2069,7 @@ const Client = {
         break;
       case 'chat': chatAdd(d.m); break;
       case 'chatlog': chatReset(d.list); break;
-      case 'emoji': showEmoji(d.e, d.name, d.col); break;
+      case 'emoji': showEmoji(d.e, d.name, d.ci); break;
       case 'bye': {
         const why = { closed: 'The host closed the room.', kicked: 'The host removed you from the room.', full: netMsg('full'), dup: 'You joined this room from another tab.' }[d.r] || 'Disconnected.';
         const wasJoined = this.joined;
@@ -1863,6 +2087,136 @@ $('#b-join').onclick = () => Client.join($('#join-code').value);
 $('#join-code').addEventListener('input', e => { const v = normCode(e.target.value); if (v !== e.target.value) e.target.value = v; $('#join-err').textContent = ''; });
 $('#join-code').addEventListener('keydown', e => { if (e.key === 'Enter') Client.join(e.target.value); });
 
+/* ---------- colour & avatar picker ---------- */
+let pick = null;
+function openPicker(o) { pick = o; renderPicker(); ov('pick', true); }
+function renderPicker() {
+  if (!pick) return;
+  $('#pk-title').textContent = pick.title;
+  const col = COLORS[pick.c];
+  $('#pk-prev').innerHTML = `<span class="look" style="--c:${col}">${pick.av}</span>`;
+  $('#pk-colors').innerHTML = COLORS.map((h, k) => `<button data-c="${k}" style="--c:${h}" class="${k === pick.c ? 'on' : ''}"${pick.taken.has(k) && k !== pick.c ? ' disabled title="Taken"' : ''} aria-label="Colour ${k + 1}"></button>`).join('');
+  $('#pk-avs').innerHTML = AVATARS.map(a => `<button data-av="${a}" class="${a === pick.av ? 'on' : ''}" style="--c:${col}" aria-label="Avatar ${a}">${a}</button>`).join('');
+}
+$('#pk-colors').onclick = e => { const b = e.target.closest('button[data-c]'); if (!b || b.disabled || !pick) return; pick.c = +b.dataset.c; pick.onPick(pick.c, pick.av); renderPicker(); };
+$('#pk-avs').onclick = e => { const b = e.target.closest('button[data-av]'); if (!b || !pick) return; pick.av = b.dataset.av; pick.onPick(pick.c, pick.av); renderPicker(); };
+$('#pk-done').onclick = () => { pick = null; ov('pick', false); };
+
+/* ---------- share result card ---------- */
+function siteUrl() { return location.origin + location.pathname; }
+function resultCard(s) {
+  const W = 1080, H = 1350, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d'), css = getComputedStyle(document.body);
+  const bg = css.getPropertyValue('--bg').trim() || '#070914', text = css.getPropertyValue('--text').trim() || '#fff', muted = css.getPropertyValue('--muted').trim() || '#999';
+  const line = THEME === 'paper' ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.08)';
+  const p = s.pl[s.winner], col = COLORS[p.c], font = 'ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  if (THEME === 'neon') {
+    const gr = g.createRadialGradient(W / 2, 250, 0, W / 2, 250, 700);
+    gr.addColorStop(0, rgba(col, .28)); gr.addColorStop(1, rgba(col, 0));
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  }
+  const fit = (str, weight, size, max) => { let z = size; do { g.font = `${weight} ${z}px ${font}`; z -= 4; } while (g.measureText(str).width > max && z > 20); };
+  g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.fillStyle = muted; g.font = `800 32px ${font}`;
+  if ('letterSpacing' in g) g.letterSpacing = '10px';
+  g.fillText('CHAIN REACTION', W / 2 + 5, 100);
+  if ('letterSpacing' in g) g.letterSpacing = '0px';
+  g.font = `110px ${font}`; g.fillStyle = text;
+  g.fillText(s.teams ? '🏆' : (p.av || '🏆'), W / 2, 240);
+  const title = s.teams ? `${teamName(p.t)} wins!` : `${p.name} wins!`;
+  g.fillStyle = col; fit(title, 900, 80, W - 120); g.fillText(title, W / 2, 345);
+  const sub = s.teams ? s.pl.filter(x => x.t === p.t).map(x => x.name).join(' & ') : `${s.cols}×${s.rows} board · ${s.pl.length} players`;
+  g.fillStyle = muted; fit(sub, 600, 34, W - 160); g.fillText(sub, W / 2, 400);
+  // board
+  const bw = 880, bh = 620, cell = Math.floor(Math.min(bw / s.cols, bh / s.rows));
+  const ox = Math.round((W - cell * s.cols) / 2), oy = 450 + Math.round((bh - cell * s.rows) / 2);
+  g.beginPath();
+  for (let x = 0; x <= s.cols; x++) { g.moveTo(ox + x * cell, oy); g.lineTo(ox + x * cell, oy + cell * s.rows); }
+  for (let y = 0; y <= s.rows; y++) { g.moveTo(ox, oy + y * cell); g.lineTo(ox + cell * s.cols, oy + y * cell); }
+  if (THEME === 'neon') { g.lineWidth = 8; g.strokeStyle = rgba(col, .12); g.stroke(); }
+  g.lineWidth = 2; g.strokeStyle = rgba(col, THEME === 'neon' ? .75 : .45); g.stroke();
+  const R = cell * .2, sp = {};
+  for (let i = 0; i < s.o.length; i++) {
+    const n = s.n[i], ow = s.o[i];
+    if (n <= 0 || ow < 0) continue;
+    const ci = s.pl[ow].c, img = sp[ci] || (sp[ci] = makeOrb(COLORS[ci], R, THEME));
+    const x0 = ox + (i % s.cols + .5) * cell, y0 = oy + ((i / s.cols | 0) + .5) * cell, ang = i * 1.7;
+    for (const [dx, dy] of OFF[Math.min(n, 4)]) {
+      const x = x0 + (dx * Math.cos(ang) - dy * Math.sin(ang)) * R, y = y0 + (dx * Math.sin(ang) + dy * Math.cos(ang)) * R;
+      g.drawImage(img, x - img.width / 2, y - img.height / 2);
+    }
+  }
+  // stats
+  const stats = [[s.moves, 'MOVES'], [s.maxChain, 'BEST CHAIN'], [s.pl.length, 'PLAYERS']];
+  stats.forEach(([v, lab], k) => {
+    const x = W / 2 + (k - 1) * 300;
+    g.fillStyle = line; g.beginPath(); if (g.roundRect) g.roundRect(x - 130, 1110, 260, 120, 24); else g.rect(x - 130, 1110, 260, 120); g.fill();
+    g.fillStyle = text; g.font = `900 52px ${font}`; g.fillText(String(v), x, 1172);
+    g.fillStyle = muted; g.font = `700 22px ${font}`; g.fillText(lab, x, 1208);
+  });
+  g.fillStyle = muted; g.font = `600 28px ${font}`;
+  g.fillText('by Divyanshu · ' + siteUrl().replace(/^https?:\/\//, '').replace(/\/$/, ''), W / 2, 1300);
+  return c;
+}
+async function shareResult() {
+  const s = V.s;
+  if (!s || s.winner < 0) return;
+  const blob = await new Promise(r => resultCard(s).toBlob(r, 'image/png'));
+  if (!blob) { toast("Couldn't create the image"); return; }
+  const file = new File([blob], 'chain-reaction-result.png', { type: 'image/png' });
+  const p = s.pl[s.winner];
+  const text = (s.teams ? `${teamName(p.t)} won` : `${p.name} won`) + ` at Chain Reaction! Play: ${siteUrl()}`;
+  if (navigator.canShare && navigator.share) {
+    let ok = false; try { ok = navigator.canShare({ files: [file] }); } catch (e) {}
+    if (ok) { try { await navigator.share({ files: [file], title: 'Chain Reaction', text }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = file.name;
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  toast('📸 Result image saved');
+}
+$('#w-share').onclick = shareResult;
+
+/* ---------- themes ---------- */
+function setTheme(id) {
+  if (!PALETTES[id]) id = 'neon';
+  THEME = id; COLORS = PALETTES[id];
+  const b = document.body;
+  b.classList.toggle('flat', id !== 'neon');
+  b.classList.toggle('t-matte', id === 'matte');
+  b.classList.toggle('t-paper', id === 'paper');
+  ['--p0', '--p1', '--p2'].forEach((v, k) => b.style.setProperty(v, COLORS[k]));
+  $('meta[name="theme-color"]').content = getComputedStyle(b).getPropertyValue('--bg').trim() || '#070914';
+  store.set('cr_theme', id);
+  V.spKey = ''; if (V.cs) buildSprites();
+  $('#themes').innerHTML = THEMES.map(t => `<button data-th="${t.id}" class="${t.id === id ? 'on' : ''}"><i class="th-${t.id}"></i>${t.label}</button>`).join('');
+  if (V.s) updateHUD();
+}
+$('#themes').onclick = e => { const b = e.target.closest('[data-th]'); if (b) setTheme(b.dataset.th); };
+setTheme(store.get('cr_theme', 'neon'));
+
+/* ---------- install as an app ---------- */
+let installEvt = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; $('#b-install').classList.remove('hidden'); });
+window.addEventListener('appinstalled', () => { installEvt = null; $('#b-install').classList.add('hidden'); toast('📲 Installed — find it on your home screen'); });
+if (isIOS && !isStandalone()) $('#b-install').classList.remove('hidden');
+$('#b-install').onclick = async () => {
+  if (installEvt) {
+    const e = installEvt; installEvt = null;
+    e.prompt();
+    try { await e.userChoice; } catch (err) {}
+    $('#b-install').classList.add('hidden');
+  } else if (isIOS) dialog('Install on iPhone / iPad', 'In Safari, tap the Share button, then choose "Add to Home Screen".', 'Got it');
+};
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+
 /* ---------- boot ---------- */
 refreshResume();
 (() => {
@@ -1875,7 +2229,7 @@ refreshResume();
   if (ss.get('cr_room') === room) Client.join(room);
   else if (!store.get('cr_name', '')) setTimeout(() => $('#s-online .name-in').focus(), 300);
 })();
-window.__cr = { V, G, L, Host, Client, CID, chatFit };
+window.__cr = { V, G, L, Host, Client, CID, chatFit, setTheme, resultCard };
 </script>
 </body>
 </html>

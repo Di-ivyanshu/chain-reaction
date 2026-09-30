@@ -11,6 +11,10 @@ The explosive strategy game — in a single HTML file. **by Divyanshu**
 - **Exit & watch** — leave a running game but stay in the room to watch and chat.
 - **Host controls** — kick any player from the lobby or mid-game (tap their name); kicked players can't rejoin.
 - **Local** pass-and-play for 2–8 players, or **vs Computer** (Easy / Normal / Hard).
+- **Team mode** — 2 teams (4, 6 or 8 players); teammates' explosions never steal each other's cells.
+- **Colour & avatar picker**, **quick-chat phrases**, **last-move highlight** and a **shareable result card**.
+- **Themes** — Neon, Matte Dark and Matte Light.
+- **Install as an app** (PWA) — add to your home screen; local and computer games work offline.
 - Auto-reconnect on refresh, spectators, rematch, emoji reactions, sound, mobile friendly.
 
 ## Rules
