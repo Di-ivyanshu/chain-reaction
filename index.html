@@ -1450,7 +1450,7 @@ function showEmoji(e, name, ci) {
   setTimeout(() => d.remove(), 2000);
 }
 window.addEventListener('beforeunload', e => {
-  if ((G.mode === 'host' && Host.peer) || (G.mode === 'client' && screen === 'game' && V.s && V.s.winner < 0)) { e.preventDefault(); e.returnValue = ''; }
+  if ((G.mode === 'host' && Host.opened) || (G.mode === 'client' && screen === 'game' && V.s && V.s.winner < 0)) { e.preventDefault(); e.returnValue = ''; }
 });
 
 /* ---------- networking ---------- */
@@ -1487,6 +1487,173 @@ function netMsg(t) {
 }
 function roomLink(code) { return location.origin + location.pathname + '?room=' + code; }
 function setNet(ok) { const p = $('#net-pill'); p.textContent = ok ? '● Online' : '● Reconnecting'; p.classList.toggle('bad', !ok); }
+
+/* ---------- relay transport ----------
+   Direct WebRTC links fail on many mobile/CGNAT networks and the free TURN relays are gone,
+   so every room is also reachable through public MQTT brokers over plain secure WebSockets.
+   A RelayConn mimics the parts of a PeerJS DataConnection the game uses (open, send, close, on). */
+const BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'];
+const RELAY_BASE = 'chainrx-dv1/';
+const TE = new TextEncoder(), TD = new TextDecoder();
+function mqStr(s) { const b = TE.encode(s), o = new Uint8Array(2 + b.length); o[0] = b.length >> 8; o[1] = b.length & 255; o.set(b, 2); return o; }
+function mqPkt(h, parts) {
+  let n = 0; for (const p of parts) n += p.length;
+  const lb = []; let x = n;
+  do { let d = x % 128; x = Math.floor(x / 128); if (x) d |= 128; lb.push(d); } while (x);
+  const o = new Uint8Array(1 + lb.length + n); o[0] = h; o.set(lb, 1);
+  let k = 1 + lb.length; for (const p of parts) { o.set(p, k); k += p.length; }
+  return o;
+}
+// minimal MQTT 3.1.1 client: connect, subscribe, publish (QoS 0), keep-alive
+class Mqtt {
+  constructor(url, onMsg, onDown) { this.url = url; this.onMsg = onMsg; this.onDown = onDown; this.ws = null; this.buf = new Uint8Array(0); this.pid = 0; this.up = false; this.closed = false; this.ackCb = null; }
+  connect() {
+    return new Promise((res, rej) => {
+      let ws;
+      try { ws = new WebSocket(this.url, 'mqtt'); } catch (e) { rej(e); return; }
+      this.ws = ws; ws.binaryType = 'arraybuffer';
+      const to = setTimeout(() => { rej(new Error('timeout')); this.close(); }, 8000);
+      this.ackCb = ok => { clearTimeout(to); if (!ok) { rej(new Error('refused')); this.close(); return; } this.up = true; this.ping = setInterval(() => this.raw(new Uint8Array([0xc0, 0])), 20000); res(this); };
+      ws.onopen = () => ws.send(mqPkt(0x10, [mqStr('MQTT'), new Uint8Array([4, 2, 0, 50]), mqStr('crx' + rid(14))]));
+      ws.onmessage = e => this.feed(new Uint8Array(e.data));
+      ws.onerror = () => {};
+      ws.onclose = () => {
+        clearTimeout(to); clearInterval(this.ping);
+        const was = this.up; this.up = false;
+        if (!was) rej(new Error('closed'));
+        else if (!this.closed && this.onDown) this.onDown();
+      };
+    });
+  }
+  feed(chunk) {
+    const b = new Uint8Array(this.buf.length + chunk.length); b.set(this.buf); b.set(chunk, this.buf.length);
+    let p = 0;
+    while (b.length - p >= 2) {
+      let mul = 1, n = 0, k = p + 1, byte;
+      do { if (k >= b.length) { this.buf = b.slice(p); return; } byte = b[k++]; n += (byte & 127) * mul; mul *= 128; } while (byte & 128);
+      if (k + n > b.length) break;
+      const type = b[p] >> 4, flags = b[p] & 15, body = b.subarray(k, k + n);
+      if (type === 2) { if (this.ackCb) { const cb = this.ackCb; this.ackCb = null; cb(body[1] === 0); } }
+      else if (type === 3 && body.length >= 2) {
+        const tl = body[0] << 8 | body[1], off = 2 + tl + (((flags >> 1) & 3) ? 2 : 0);
+        try { this.onMsg(TD.decode(body.subarray(2, 2 + tl)), TD.decode(body.subarray(off))); } catch (e) {}
+      }
+      p = k + n;
+    }
+    this.buf = b.slice(p);
+  }
+  raw(b) { try { if (this.ws && this.ws.readyState === 1) this.ws.send(b); } catch (e) {} }
+  sub(topic) { const id = (++this.pid & 0xffff) || 1; this.raw(mqPkt(0x82, [new Uint8Array([id >> 8, id & 255]), mqStr(topic), new Uint8Array([0])])); }
+  pub(topic, s) { this.raw(mqPkt(0x30, [mqStr(topic), TE.encode(s)])); }
+  close() { this.closed = true; this.up = false; clearInterval(this.ping); try { if (this.ws) this.ws.close(); } catch (e) {} }
+}
+class RelayConn {
+  constructor(mq, out, from) { this.mq = mq; this.out = out; this.from = from; this.open = true; this.relay = true; this.h = {}; this.onClosed = null; }
+  on(ev, fn) { (this.h[ev] = this.h[ev] || []).push(fn); }
+  emit(ev, a) { for (const f of this.h[ev] || []) { try { f(a); } catch (e) { console.error(e); } } }
+  wrap(m) { return JSON.stringify(this.from ? { f: this.from, m } : { m }); }
+  send(msg) { if (this.open) this.mq.pub(this.out, this.wrap(msg)); }
+  close() {
+    if (!this.open) return;
+    this.mq.pub(this.out, JSON.stringify(this.from ? { f: this.from, x: 1 } : { x: 1 }));
+    this.drop();
+  }
+  drop() { if (!this.open) return; this.open = false; if (this.onClosed) this.onClosed(); setTimeout(() => this.emit('close'), 0); }
+}
+// host side: listens on every broker; each client appears as a RelayConn handed to Host.onConn
+const RelayHost = {
+  mqs: [], conns: new Map(), code: '', gen: 0,
+  up() { return this.mqs.length > 0; },
+  start(code, onReady) {
+    this.stop();
+    this.code = code;
+    const gen = this.gen;
+    let ready = false;
+    const once = () => { if (!ready && gen === this.gen) { ready = true; onReady(); } };
+    for (const url of BROKERS) this.link(url, gen, once);
+  },
+  link(url, gen, onUp, wait) {
+    const mq = new Mqtt(url, (topic, payload) => this.onMsg(mq, payload), () => {
+      if (gen !== this.gen) return;
+      this.mqs = this.mqs.filter(m => m !== mq);
+      Host.netChanged();
+      setTimeout(() => { if (gen === this.gen) this.link(url, gen, onUp); }, 3000);
+    });
+    mq.connect().then(() => {
+      if (gen !== this.gen) { mq.close(); return; }
+      this.mqs.push(mq);
+      mq.sub(RELAY_BASE + this.code + '/h');
+      onUp(); Host.netChanged();
+    }).catch(() => {
+      // a broker that keeps failing is retried less and less often (8s, 16s, ... up to 60s)
+      const next = Math.min((wait || 4000) * 2, 60000);
+      if (gen === this.gen) setTimeout(() => { if (gen === this.gen) this.link(url, gen, onUp, next); }, next);
+    });
+  },
+  onMsg(mq, payload) {
+    let d; try { d = JSON.parse(payload); } catch (e) { return; }
+    if (!d || typeof d.f !== 'string' || !d.f || d.f.length > 40) return;
+    const key = d.f;
+    let c = this.conns.get(key);
+    if (d.x) { if (c) { this.conns.delete(key); c.drop(); } return; }
+    if (!d.m || typeof d.m !== 'object') return;
+    if (c) c.mq = mq; // a client that moved to another broker keeps its connection
+    if (d.m.t === '_open') {
+      if (!c) {
+        c = new RelayConn(mq, RELAY_BASE + this.code + '/c/' + key, null);
+        const cc = c;
+        c.onClosed = () => { if (this.conns.get(key) === cc) this.conns.delete(key); };
+        this.conns.set(key, c);
+        Host.onConn(c);
+      }
+      c.send({ t: '_ack' });
+      return;
+    }
+    if (c) c.emit('data', d.m);
+  },
+  stop() {
+    this.gen++;
+    for (const m of this.mqs) m.close();
+    this.mqs = [];
+    for (const c of [...this.conns.values()]) c.drop();
+    this.conns.clear();
+  }
+};
+// client side: try each broker until the host answers; onFail('notfound') = brokers fine but no host, 'timeout' = no broker reachable
+function relayConnect(code, onOpen, onFail) {
+  let stopped = false, cur = null, conn = null, idx = 0, reached = false, ackT = 0;
+  const id = rid(12), inT = RELAY_BASE + code + '/c/' + id, outT = RELAY_BASE + code + '/h';
+  const next = () => {
+    if (stopped) return;
+    if (idx >= BROKERS.length) { stopped = true; onFail(reached ? 'notfound' : 'timeout'); return; }
+    let acked = false;
+    const m = new Mqtt(BROKERS[idx++], (t, payload) => {
+      let d; try { d = JSON.parse(payload); } catch (e) { return; }
+      if (!d || stopped && !conn) return;
+      if (d.x) { if (conn) conn.drop(); return; }
+      if (!d.m || typeof d.m !== 'object') return;
+      if (d.m.t === '_ack') {
+        if (acked) return;
+        acked = true; clearTimeout(ackT);
+        conn = new RelayConn(m, outT, id);
+        conn.onClosed = () => setTimeout(() => m.close(), 150);
+        onOpen(conn);
+        return;
+      }
+      if (conn) conn.emit('data', d.m);
+    }, () => { if (conn) conn.drop(); });
+    cur = m;
+    m.connect().then(() => {
+      if (stopped) { m.close(); return; }
+      reached = true;
+      m.sub(inT);
+      m.pub(outT, JSON.stringify({ f: id, m: { t: '_open' } }));
+      ackT = setTimeout(() => { if (!acked) { m.close(); next(); } }, 5000);
+    }).catch(() => next());
+  };
+  next();
+  return () => { stopped = true; clearTimeout(ackT); if (conn) conn.close(); else if (cur) cur.close(); };
+}
 
 let lobbySeen = new Set();
 function renderLobby(players, grid, isHost, code, timer, undo, teams) {
@@ -1571,7 +1738,7 @@ const Host = {
   async create() {
     const cancel = () => this.close();
     busy('Creating room…', cancel);
-    try { await loadPeer(); } catch (e) { busyOff(); toast(netMsg('load')); return; }
+    try { await loadPeer(); } catch (e) { /* direct links unavailable; the relay still works */ }
     if (busyCancel !== cancel) return;
     this.reset();
     G.mode = 'host'; G.mySeat = 0; G.presence = null;
@@ -1585,43 +1752,47 @@ const Host = {
     this.looks.set(CID, { c: validC(pref.c) ? pref.c : 0, av: validAv(pref.av) ? pref.av : AVATARS[Math.random() * AVATARS.length | 0] });
     chatReset([]);
     let tries = 0;
+    // the room goes live as soon as either path (relay or direct) is up
+    const up = () => {
+      if (G.mode !== 'host') return;
+      this.netChanged();
+      if (this.opened) return;
+      this.opened = true;
+      busyOff();
+      this.hb = setInterval(() => this.beat(), 3000);
+      openLobby();
+      this.pushLobby();
+    };
     const attempt = () => {
       if (G.mode !== 'host') return;
       this.code = rid(5, CODE_ABC);
+      RelayHost.start(this.code, up);
+      if (!window.Peer) return;
       let peer;
-      try { peer = new Peer(PEER_PREFIX + this.code, { debug: 0, config: ICE }); } catch (e) { busyOff(); toast(netMsg('incompat')); G.mode = null; return; }
+      try { peer = new Peer(PEER_PREFIX + this.code, { debug: 0, config: ICE }); } catch (e) { return; }
       this.peer = peer;
-      peer.on('open', () => {
-        if (peer !== this.peer) return;
-        setNet(true);
-        if (this.opened) return;
-        this.opened = true;
-        busyOff();
-        this.hb = setInterval(() => this.beat(), 3000);
-        openLobby();
-        this.pushLobby();
-      });
+      peer.on('open', () => { if (peer === this.peer) up(); });
       peer.on('connection', c => { if (peer === this.peer) this.onConn(c); });
       peer.on('disconnected', () => {
         if (peer !== this.peer || peer.destroyed) return;
-        setNet(false);
+        this.netChanged();
         setTimeout(() => { if (peer === this.peer && !peer.destroyed && peer.disconnected) { try { peer.reconnect(); } catch (e) {} } }, 1500);
       });
       peer.on('error', err => {
         if (peer !== this.peer) return;
         const t = err && err.type;
-        if (!this.opened) {
-          if (t === 'unavailable-id' && tries++ < 5) { try { peer.destroy(); } catch (e) {} attempt(); return; }
-          busyOff(); toast(netMsg(t === 'browser-incompatible' ? 'incompat' : t)); this.close();
-        } else if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed') {
-          setNet(false);
+        // someone else holds this code on the direct server: pick another before the room is shown
+        if (t === 'unavailable-id' && !this.opened && tries++ < 5) { try { peer.destroy(); } catch (e) {} attempt(); return; }
+        if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed') {
+          this.netChanged();
           setTimeout(() => { if (peer === this.peer && !peer.destroyed && peer.disconnected) { try { peer.reconnect(); } catch (e) {} } }, 3000);
         }
       });
     };
     attempt();
-    setTimeout(() => { if (G.mode === 'host' && !this.opened && this.peer) { busyOff(); toast(netMsg('timeout')); this.close(); } }, 20000);
+    setTimeout(() => { if (G.mode === 'host' && !this.opened) { busyOff(); toast(netMsg('timeout')); this.close(); } }, 20000);
   },
+  netChanged() { if (G.mode === 'host') setNet(RelayHost.up() || !!(this.peer && this.peer.open && !this.peer.disconnected)); },
   reset() {
     clearInterval(this.hb); this.hb = 0;
     clearTimeout(this.tt); this.deadline = 0;
@@ -1630,12 +1801,13 @@ const Host = {
     this.conns.clear(); this.emT.clear(); this.chT.clear(); this.pids.clear(); this.chatLog = []; this.prev = null;
     this.order = []; this.seats = []; this.presence = []; this.state = null; this.phase = 'lobby'; this.opened = false;
     this.peer = null;
+    RelayHost.stop();
   },
   close() {
-    const p = this.peer;
+    const p = this.peer, g = RelayHost.gen;
     this.broadcast({ t: 'bye', r: 'closed' });
     this.reset();
-    if (p) setTimeout(() => { try { p.destroy(); } catch (e) {} }, 300);
+    setTimeout(() => { try { if (p) p.destroy(); } catch (e) {} if (RelayHost.gen === g) RelayHost.stop(); }, 300);
     goHome();
   },
   broadcast(msg) { for (const m of this.conns.values()) send(m.conn, msg); },
@@ -1912,7 +2084,7 @@ const Client = {
     if (code.length !== 5) { $('#join-err').textContent = netMsg('code'); $('#join-code').focus(); return; }
     const cancel = () => this.leave();
     busy(`Joining room ${code}…`, cancel);
-    try { await loadPeer(); } catch (e) { busyOff(); $('#join-err').textContent = netMsg('load'); return; }
+    try { await loadPeer(); } catch (e) { /* direct links unavailable; the relay still works */ }
     if (busyCancel !== cancel) return;
     this.cleanup();
     G.mode = 'client'; G.mySeat = -1; G.presence = null; G.pending = false;
@@ -1927,42 +2099,56 @@ const Client = {
     }, 3000);
     this.connect();
   },
+  // Tries a direct WebRTC link and, if that isn't up within 2s, the relay too; whichever opens first is used.
   connect() {
     const token = ++this.token;
     this.cleanupPeer();
-    let peer;
-    try { peer = new Peer({ debug: 0, config: ICE }); } catch (e) { this.failed('incompat', true); return; }
-    this.peer = peer;
-    let opened = false;
+    let done = false, directDead = false, relayDead = false, relayWhy = 'timeout', relayOn = false;
     const fail = (why, fatal) => { if (token === this.token) this.failed(why, fatal); };
-    clearTimeout(this.connTimer);
-    this.connTimer = setTimeout(() => fail('timeout'), 15000);
-    peer.on('open', () => {
-      if (token !== this.token) return;
-      const conn = peer.connect(this.hostId, { reliable: true, serialization: 'json' });
-      this.conn = conn;
-      conn.on('open', () => {
-        if (token !== this.token) return;
-        opened = true; clearTimeout(this.connTimer);
-        this.last = Date.now();
-        send(conn, { t: 'hello', cid: CID, name: myName(), look: store.get('cr_look', null) });
-      });
+    const win = conn => {
+      if (token !== this.token || done) { try { conn.close(); } catch (e) {} return; }
+      done = true;
+      clearTimeout(this.connTimer); clearTimeout(this.relayT);
+      if (conn.relay) { const p = this.peer; this.peer = null; try { if (p) p.destroy(); } catch (e) {} }
+      else if (this.stopRelay) { const r = this.stopRelay; this.stopRelay = null; r(); }
+      this.conn = conn; this.via = conn.relay ? 'relay' : 'direct';
       conn.on('data', d => { if (token !== this.token) return; this.last = Date.now(); this.onData(d); });
       conn.on('close', () => fail('closed'));
       conn.on('error', () => fail('closed'));
-    });
-    peer.on('error', err => {
-      const t = err && err.type;
-      if (t === 'peer-unavailable') fail('notfound', true);
-      else if (t === 'browser-incompatible') fail('incompat', true);
-      else if (!opened) fail(t || 'network');
-    });
+      this.last = Date.now();
+      send(conn, { t: 'hello', cid: CID, name: myName(), look: store.get('cr_look', null) });
+    };
+    const settle = () => { if (!done && directDead && relayDead) { done = true; fail(relayWhy, relayWhy === 'notfound'); } };
+    const startRelay = () => {
+      if (relayOn || done || token !== this.token) return;
+      relayOn = true;
+      this.stopRelay = relayConnect(this.code, win, why => { relayDead = true; relayWhy = why; settle(); });
+    };
+    if (window.Peer && !store.get('cr_force_relay', false)) {
+      let peer = null;
+      try { peer = new Peer({ debug: 0, config: ICE }); } catch (e) {}
+      if (peer) {
+        this.peer = peer;
+        peer.on('open', () => {
+          if (token !== this.token || done) return;
+          const conn = peer.connect(this.hostId, { reliable: true, serialization: 'json' });
+          conn.on('open', () => win(conn));
+        });
+        peer.on('error', () => { directDead = true; startRelay(); settle(); });
+      } else directDead = true;
+    } else directDead = true;
+    clearTimeout(this.relayT);
+    this.relayT = setTimeout(startRelay, directDead ? 0 : 2000);
+    clearTimeout(this.connTimer);
+    this.connTimer = setTimeout(() => { if (!done) { done = true; fail('timeout'); } }, 25000);
   },
   cleanupPeer() {
-    const p = this.peer, c = this.conn;
-    this.peer = null; this.conn = null;
+    const p = this.peer, c = this.conn, r = this.stopRelay;
+    this.peer = null; this.conn = null; this.stopRelay = null;
+    clearTimeout(this.relayT);
     try { if (c) c.close(); } catch (e) {}
     try { if (p) p.destroy(); } catch (e) {}
+    try { if (r) r(); } catch (e) {}
   },
   cleanup() { this.token++; clearTimeout(this.connTimer); clearInterval(this.hb); this.hb = 0; this.cleanupPeer(); },
   failed(why, fatal) {
@@ -1989,10 +2175,10 @@ const Client = {
   leave(noNotify) {
     if (!noNotify) this.send({ t: 'leave' });
     this.closing = true;
-    const c = this.conn, p = this.peer;
-    this.token++; clearTimeout(this.connTimer); clearInterval(this.hb); this.hb = 0;
-    this.peer = null; this.conn = null;
-    setTimeout(() => { try { if (c) c.close(); } catch (e) {} try { if (p) p.destroy(); } catch (e) {} }, 250);
+    const c = this.conn, p = this.peer, r = this.stopRelay;
+    this.token++; clearTimeout(this.connTimer); clearTimeout(this.relayT); clearInterval(this.hb); this.hb = 0;
+    this.peer = null; this.conn = null; this.stopRelay = null;
+    setTimeout(() => { try { if (c) c.close(); } catch (e) {} try { if (p) p.destroy(); } catch (e) {} try { if (r) r(); } catch (e) {} }, 250);
     this.joined = false; this.state = null;
     goHome();
   },
@@ -2229,7 +2415,7 @@ refreshResume();
   if (ss.get('cr_room') === room) Client.join(room);
   else if (!store.get('cr_name', '')) setTimeout(() => $('#s-online .name-in').focus(), 300);
 })();
-window.__cr = { V, G, L, Host, Client, CID, chatFit, setTheme, resultCard };
+window.__cr = { V, G, L, Host, Client, CID, chatFit, setTheme, resultCard, RelayHost };
 </script>
 </body>
 </html>
