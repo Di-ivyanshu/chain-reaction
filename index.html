@@ -261,6 +261,21 @@ body.t-paper{--bubble:#ebe8e1}
 /* lobby: teams, ready */
 button.team{cursor:pointer;border:1px solid var(--muted);color:var(--text)}
 .btn.go{animation:gopulse 1.3s ease-in-out infinite}
+/* kick-off countdown */
+.ov.count{background:rgba(4,5,14,.45);pointer-events:none;z-index:15}
+body.t-paper .ov.count{background:rgba(243,241,236,.55)}
+.cnum{font-size:min(38vw,170px);font-weight:900;line-height:1;color:var(--text);text-shadow:0 0 40px rgba(124,92,255,.6);font-variant-numeric:tabular-nums}
+body.flat .cnum{text-shadow:none}
+.cnum.tick{animation:cpop .95s ease-out}
+@keyframes cpop{0%{transform:scale(2.2);opacity:0}25%{transform:scale(1);opacity:1}100%{transform:scale(.85);opacity:.25}}
+.cnum.go{color:#2bdc76}
+/* avatar reaction on a player's chip */
+.chip .av{display:inline-block}
+.chip .av.pop{animation:avpop 1.6s ease-out}
+@keyframes avpop{0%{transform:scale(.4)}15%{transform:scale(1.7) rotate(-12deg)}30%{transform:scale(1.2) rotate(8deg)}45%{transform:scale(1.45)}100%{transform:scale(1)}}
+.invite{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.btn.wa{background:#1fa855;border-color:transparent;color:#fff}
+.btn.wa:hover{background:#1c9a4e}
 @keyframes gopulse{50%{transform:scale(1.03);filter:brightness(1.15)}}
 .ready{font-size:11px;font-weight:800;color:#2bdc76;flex:none}
 body.t-paper .ready{color:#23804a}
@@ -319,7 +334,7 @@ body.t-paper .ready{color:#23804a}
       <p class="muted small">ROOM CODE</p>
       <div class="bigcode" id="l-code" title="Tap to copy">-----</div>
       <div class="linkbox"><input class="in" id="l-link" readonly><button class="btn sm primary" id="b-copy">Copy link</button></div>
-      <button class="btn sm ghost" id="b-share">📤 Share invite</button>
+      <div class="invite"><button class="btn sm wa" id="b-wa">💬 WhatsApp</button><button class="btn sm ghost" id="b-share">📤 Share invite</button></div>
     </div>
     <div class="card">
       <div class="card-h"><h3>Players <span class="muted" id="l-count">1/8</span></h3><button class="btn sm ghost" id="b-look">🎨 My look</button></div>
@@ -435,6 +450,8 @@ body.t-paper .ready{color:#23804a}
   <div class="vgrid hidden" id="vgrid"></div>
   <form class="chat-in" id="chat-form" autocomplete="off"><input class="in" id="chat-text" maxlength="200" placeholder="Type a message…" enterkeyhint="send" spellcheck="true"><button class="btn primary sm" type="submit">Send</button></form>
 </div>
+
+<div class="ov count" id="ov-count" aria-live="assertive"><div class="cnum" id="c-num"></div></div>
 
 <div id="toasts"></div>
 
@@ -737,7 +754,7 @@ async function copyText(t) {
 
 /* ---------- sound ---------- */
 const Snd = {
-  ctx: null, on: store.get('cr_snd', true), lb: 0, lv: 0, nb: null,
+  ctx: null, on: true, lb: 0, lv: 0, nb: null,
   init() {
     if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; } }
     if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
@@ -753,7 +770,7 @@ const Snd = {
   place() { this.tone(420, 780, .09, 'sine', .11); },
   boom(w) {
     const now = performance.now();
-    if (now - this.lv > 90 && navigator.vibrate && this.on) { this.lv = now; try { navigator.vibrate(12); } catch (e) {} }
+    if (now - this.lv > 90) { this.lv = now; buzz(12); }
     if (!this.on || !this.ctx || this.ctx.state !== 'running' || now - this.lb < 45) return;
     this.lb = now;
     const a = this.ctx, t = a.currentTime, k = Math.min(w, 20);
@@ -964,6 +981,7 @@ function stepAnim(t, fast) {
       if (!fast) Snd.boom(ev.w);
     } else {
       V.cur = null; V.fly.length = 0;
+      if (!fast && ev.waves.length >= 5) buzz([30, 40, 30, 40, 90]); // big chain
       setView(ev.final);
       nextEvent(t);
     }
@@ -1055,7 +1073,7 @@ function updateHUD() {
     const me = G.mode !== 'local' && k === G.mySeat;
     const off = G.mode !== 'local' && G.presence && G.presence[k] === false && !p.out;
     const tap = G.mode === 'host' && k !== G.mySeat && !p.left;
-    h += `<div data-k="${k}" title="${tap ? 'Tap to kick' : ''}" class="chip${tap ? ' tap' : ''}${G.talking.has(seatPid(k)) ? ' talk' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${p.av ? p.av + ' ' : ''}${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null && !p.av ? ' 🤖' : ''}<span class="mic"> 🎙</span></span>${s.teams ? `<span class="team">${'AB'[p.t & 1]}</span>` : ''}<b>${counts[k]}</b></div>`;
+    h += `<div data-k="${k}" title="${tap ? 'Tap to kick' : ''}" class="chip${tap ? ' tap' : ''}${G.talking.has(seatPid(k)) ? ' talk' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${p.av ? `<span class="av${reactOf(k) ? ' pop' : ''}">${reactOf(k) || p.av}</span> ` : ''}${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null && !p.av ? ' 🤖' : ''}<span class="mic"> 🎙</span></span>${s.teams ? `<span class="team">${'AB'[p.t & 1]}</span>` : ''}<b>${counts[k]}</b></div>`;
   });
   el.innerHTML = h;
   const on = el.querySelector('.chip.on');
@@ -1100,7 +1118,7 @@ function onIdle() {
       }, 420 + Math.random() * 260);
     }
   } else if (s.turn === G.mySeat && s.moves > 0) {
-    Snd.turn();
+    Snd.turn(); buzz([40, 60, 40]);
     if (document.hidden) document.title = '● Your turn — Chain Reaction';
   }
 }
@@ -1137,7 +1155,7 @@ function tap(i) {
 }
 
 function beginGame(s) {
-  ov('win', false); clearConfetti(); busyOff();
+  ov('win', false); clearConfetti(); busyOff(); hideCount();
   clearTimeout(G.botT); clearTimeout(G.turnT); G.turnEnd = 0;
   V.queue.length = 0; V.cur = null; V.fly.length = 0; V.rings.length = 0; V.pops.clear(); V.bad = null;
   G.pending = false; G.idleKey = ''; G.myVote = false;
@@ -1195,7 +1213,7 @@ function showWin(s) {
   else if (G.mode === 'host') { again.textContent = 'Play again now'; alt.textContent = 'Lobby'; leave.textContent = 'Close room'; wait.textContent = '🔁 Rematch starts automatically when everyone votes'; }
   else { again.textContent = G.myVote ? '✓ Voted' : '🔁 Vote rematch'; alt.textContent = 'Leave room'; wait.textContent = '🔁 Vote to play again — it starts when everyone votes'; }
   if (G.votes && G.mode !== 'local') updVotes(G.votes);
-  if (iWon) { confetti(col); Snd.win(); }
+  if (iWon) { confetti(col); Snd.win(); buzz([90, 60, 90, 60, 260]); } else buzz([250]);
   ov('win', true);
 }
 $('#w-again').onclick = () => {
@@ -1345,7 +1363,7 @@ function goHome() {
   if (menuDone) menuDone(null);
   clearTimeout(G.botT); clearTimeout(G.turnT); G.turnEnd = 0;
   chatToggle(false); chatReset([]);
-  Vc.stop(true); G.talking.clear(); G.votes = null; G.myReady = false;
+  Vc.stop(true); G.talking.clear(); G.votes = null; G.myReady = false; hideCount();
   pick = null;
   ['win', 'busy', 'rules', 'pick'].forEach(o => ov(o, false));
   clearConfetti();
@@ -1395,8 +1413,24 @@ $('#g-undo').onclick = doUndo;
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && screen === 'game' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); doUndo(); }
 });
-function updSound() { $('#g-sound').textContent = Snd.on ? '🔊' : '🔇'; }
-$('#g-sound').onclick = () => { Snd.on = !Snd.on; store.set('cr_snd', Snd.on); updSound(); if (Snd.on) { Snd.init(); Snd.place(); } };
+// sound button cycles: sound + vibration → vibration only → off
+const FX = ['all', 'vibe', 'off'];
+let fxMode = store.get('cr_fx', store.get('cr_snd', true) === false ? 'off' : 'all');
+if (!FX.includes(fxMode)) fxMode = 'all';
+function buzz(p) { if (fxMode !== 'off' && navigator.vibrate) { try { navigator.vibrate(p); } catch (e) {} } }
+function updSound() {
+  Snd.on = fxMode === 'all';
+  const b = $('#g-sound');
+  b.textContent = { all: '🔊', vibe: '📳', off: '🔇' }[fxMode];
+  b.title = { all: 'Sound and vibration on', vibe: 'Vibration only', off: 'Sound and vibration off' }[fxMode];
+}
+$('#g-sound').onclick = () => {
+  fxMode = FX[(FX.indexOf(fxMode) + 1) % FX.length];
+  store.set('cr_fx', fxMode); updSound();
+  if (fxMode === 'all') { Snd.init(); Snd.place(); }
+  else if (fxMode === 'vibe') buzz(60);
+  toast({ all: '🔊 Sound and vibration on', vibe: '📳 Vibration only', off: '🔇 Sound and vibration off' }[fxMode], 1300);
+};
 updSound();
 $('#g-menu').onclick = async () => {
   if (G.mode === 'local') { saveLocal(); goHome(); if (L.state && L.state.winner < 0) toast('Game saved — resume anytime'); return; }
@@ -1682,8 +1716,18 @@ function updPtt() {
   document.addEventListener('keyup', e => { if (e.code === 'Space') Vc.talk(false); });
   window.addEventListener('blur', () => Vc.talk(false));
 })();
-function showEmoji(e, name, ci) {
+// a player's avatar on their chip turns into the emoji they sent and bounces
+const reacts = new Map();
+function reactOf(k) { const r = reacts.get(seatPid(k)); return r && r.until > Date.now() ? r.e : ''; }
+function avatarReact(pid, e) {
+  if (!pid || screen !== 'game') return;
+  clearTimeout((reacts.get(pid) || {}).t);
+  reacts.set(pid, { e, until: Date.now() + 1700, t: setTimeout(() => { reacts.delete(pid); updateHUD(); }, 1750) });
+  updateHUD();
+}
+function showEmoji(e, name, ci, pid) {
   if (screen !== 'game' || !EMOJIS.includes(e)) return;
+  avatarReact(typeof pid === 'string' ? pid : '', e);
   const box = $('#g-float');
   if (box.children.length > 14) box.firstChild.remove();
   const d = document.createElement('div');
@@ -1998,13 +2042,28 @@ $('#l-players').onclick = e => {
   const b = e.target.closest('[data-kick]'); if (b && G.mode === 'host') Host.kick(b.dataset.kick);
 };
 $('#b-ready').onclick = () => { if (G.mode !== 'client') return; G.myReady = !G.myReady; Client.send({ t: 'ready', on: G.myReady }); };
-$('#b-start').onclick = () => { if (G.mode === 'host') Host.start(); };
+$('#b-start').onclick = () => { if (G.mode === 'host') Host.kickoff(); };
+/* ---------- kick-off countdown ---------- */
+let countT = [];
+function hideCount() { countT.forEach(clearTimeout); countT = []; ov('count', false); }
+function showCount() {
+  hideCount();
+  const el = $('#c-num');
+  const step = (txt, go) => { el.textContent = txt; el.className = 'cnum' + (go ? ' go' : ''); void el.offsetWidth; el.classList.add('tick'); buzz(go ? 80 : 25); Snd.tone(go ? 880 : 520, go ? 1320 : 520, go ? .22 : .08, 'sine', .08); };
+  ov('count', true); step('3');
+  countT.push(setTimeout(() => step('2'), 1000), setTimeout(() => step('1'), 2000), setTimeout(() => step('GO!', true), 3000), setTimeout(hideCount, 3700));
+}
 $('#b-copy').onclick = async () => { toast(await copyText($('#l-link').value) ? 'Invite link copied!' : 'Copy failed — select the link manually'); };
 $('#l-code').onclick = async () => { toast(await copyText($('#l-code').textContent) ? 'Room code copied!' : 'Copy failed'); };
+function inviteText(code) { return `🎮 Join my Chain Reaction game!\nRoom code: ${code}\n👉 ${roomLink(code)}`; }
 $('#b-share').onclick = async () => {
   const url = $('#l-link').value, code = $('#l-code').textContent;
-  if (navigator.share) { try { await navigator.share({ title: 'Chain Reaction', text: `Join my Chain Reaction game! Room code: ${code}`, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
-  toast(await copyText(url) ? 'Invite link copied!' : 'Copy failed');
+  if (navigator.share) { try { await navigator.share({ title: 'Chain Reaction', text: `🎮 Join my Chain Reaction game! Room code: ${code}`, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+  toast(await copyText(inviteText(code)) ? 'Invite message copied — paste it anywhere' : 'Copy failed');
+};
+$('#b-wa').onclick = () => {
+  const code = $('#l-code').textContent;
+  window.open('https://wa.me/?text=' + encodeURIComponent(inviteText(code)), '_blank', 'noopener');
 };
 $('#lobby-back').onclick = async () => {
   if (G.mode !== 'host') { Client.leave(); return; }
@@ -2217,6 +2276,7 @@ const Host = {
     clearInterval(this.hb); this.hb = 0;
     clearTimeout(this.tt); this.deadline = 0;
     clearTimeout(this.peerRetry); clearTimeout(this.metaT); this.metaT = 0; clearTimeout(this.autoT); clearTimeout(this.voteT); this.autoT = 0; this.voteT = 0;
+    clearTimeout(this.countT); this.countT = 0;
     this.names = new Map(); this.bannedPids = new Set(); this.teamOf = new Map(); this.ready = new Set(); this.votes = new Set(); this.vids = new Map(); this.vT = new Map();
     this.rmTimers.forEach(t => clearTimeout(t)); this.rmTimers.clear();
     this.skips = []; this.banned = new Set(); this.looks = new Map();
@@ -2554,8 +2614,9 @@ const Host = {
     const seat = this.seats.indexOf(cid);
     const name = seat >= 0 ? this.state.pl[seat].name : cid === CID ? myName() : ((this.conns.get(cid) || {}).name || '?');
     const ci = seat >= 0 ? this.state.pl[seat].c : -1;
-    this.broadcast({ t: 'emoji', e, name, ci });
-    showEmoji(e, name, ci);
+    const pid = this.pidOf(cid);
+    this.broadcast({ t: 'emoji', e, name, ci, pid });
+    showEmoji(e, name, ci, pid);
   },
   toLobby() {
     this.rmTimers.forEach(t => clearTimeout(t)); this.rmTimers.clear();
@@ -2568,7 +2629,17 @@ const Host = {
     openLobby();
     this.pushLobby();
   },
-  rematch() { this.toLobby(); if (this.order.length >= 2) this.start(); else toast('Waiting for players to join'); }
+  rematch() { this.toLobby(); if (this.order.length >= 2) this.kickoff(); else toast('Waiting for players to join'); },
+  // 3-2-1 countdown on every screen, then the game starts with whoever is in the room at that moment
+  kickoff() {
+    if (this.phase !== 'lobby' || this.countT || this.order.length < 2) return;
+    this.fixTeams();
+    if (this.teams && !teamsValid(this.order.map(c => this.teamOf.get(c) | 0))) { toast('Put at least one player in each team'); return; }
+    this.broadcast({ t: 'count' });
+    showCount();
+    const st = $('#b-start'); st.disabled = true; st.textContent = 'Starting…';
+    this.countT = setTimeout(() => { this.countT = 0; if (this.phase === 'lobby' && G.mode === 'host') this.start(); }, 3000);
+  },
 };
 
 const Client = {
@@ -2798,7 +2869,8 @@ const Client = {
         break;
       case 'chat': chatAdd(d.m); break;
       case 'chatlog': chatReset(d.list); break;
-      case 'emoji': showEmoji(d.e, d.name, d.ci); break;
+      case 'emoji': showEmoji(d.e, d.name, d.ci, d.pid); break;
+      case 'count': showCount(); break;
       case 'meta': if (d.meta && typeof d.meta === 'object' && Array.isArray(d.meta.order)) this.meta = d.meta; break;
       case 'handover': {
         if (!d.meta || !Array.isArray(d.meta.order)) return;

@@ -18,6 +18,7 @@ The explosive strategy game — in a single HTML file. **by Divyanshu**
 - **Colour & avatar picker**, **quick-chat phrases**, **last-move highlight** and a **shareable result card**.
 - **Themes** — Neon, Matte Dark and Matte Light.
 - **Install as an app** (PWA) — add to your home screen; local and computer games work offline.
+- **3-2-1 kick-off countdown**, **WhatsApp invite** button, **vibration patterns** (your turn, big chains, win) and **avatar reactions**.
 - Auto-reconnect on refresh, spectators, rematch, emoji reactions, sound, mobile friendly.
 
 ## Rules
