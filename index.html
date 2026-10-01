@@ -260,6 +260,8 @@ body.t-matte{--bubble:#2a2b31}
 body.t-paper{--bubble:#ebe8e1}
 /* lobby: teams, ready */
 button.team{cursor:pointer;border:1px solid var(--muted);color:var(--text)}
+.btn.go{animation:gopulse 1.3s ease-in-out infinite}
+@keyframes gopulse{50%{transform:scale(1.03);filter:brightness(1.15)}}
 .ready{font-size:11px;font-weight:800;color:#2bdc76;flex:none}
 body.t-paper .ready{color:#23804a}
 /* push-to-talk */
@@ -1947,6 +1949,9 @@ function renderLobby(players, grid, isHost, code, timer, undo, teams, hostPid) {
   st.disabled = players.length < 2 || badTeams;
   st.textContent = players.length < 2 ? 'Need at least 2 players' : badTeams ? 'Put at least one player in each team'
     : `Start game · ${teams ? `${tl.filter(t => !t).length} vs ${tl.filter(t => t).length}` : players.length + ' players'}${others.length ? ` · ${readyN}/${others.length} ready` : ''}`;
+  const allReady = others.length > 0 && readyN === others.length && !badTeams;
+  st.classList.toggle('go', isHost && allReady);
+  if (allReady && players.length >= 2) st.textContent = `▶ Start game · everyone's ready!`;
   const meP = players.find(p => p.pid === mine), rb = $('#b-ready');
   rb.classList.toggle('hidden', isHost || !meP);
   if (meP) { G.myReady = !!meP.ready; rb.textContent = meP.ready ? '✓ Ready — tap to cancel' : "✋ I'm ready"; rb.classList.toggle('primary', !meP.ready); }
@@ -1959,7 +1964,7 @@ function renderLobby(players, grid, isHost, code, timer, undo, teams, hostPid) {
   }
   const inList = players.some(p => p.pid === myPid());
   $('#l-wait').classList.toggle('hidden', isHost);
-  $('#l-wait').textContent = inList ? 'The game starts when everyone is ready (or the host starts it).' : "Lobby is full — you'll watch the next game.";
+  $('#l-wait').textContent = inList ? 'Tap Ready — the host starts the game when everyone is in.' : "Lobby is full — you'll watch the next game.";
 }
 function openLobby() { ov('win', false); clearConfetti(); busyOff(); show('lobby'); }
 $('#l-teams').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.teams = b.dataset.tm === '1'; Host.pushLobby(); } };
@@ -2405,15 +2410,13 @@ const Host = {
   setTeam(cid, t) { if (this.phase !== 'lobby' || !cid || !this.order.includes(cid)) return; this.teamOf.set(cid, t ? 1 : 0); this.pushLobby(); },
   setReady(cid, on) { if (this.phase !== 'lobby' || cid === CID || !this.order.includes(cid)) return; if (on) this.ready.add(cid); else this.ready.delete(cid); this.pushLobby(); },
   // when every other player in the lobby is ready, the game starts by itself
+  // never starts by itself (a friend may still be joining): just tells the host once everyone is ready
   checkAuto() {
     const others = this.order.filter(c => c !== CID);
     const ok = this.phase === 'lobby' && others.length > 0 && others.every(c => this.ready.has(c) && this.conns.has(c)) &&
       (!this.teams || teamsValid(this.order.map(c => this.teamOf.get(c) | 0)));
-    if (!ok) { if (this.autoT) { clearTimeout(this.autoT); this.autoT = 0; } return; }
-    if (this.autoT) return;
-    const note = '✅ Everyone is ready — starting…';
-    this.broadcast({ t: 'note', text: note }); toast(note, 2000);
-    this.autoT = setTimeout(() => { this.autoT = 0; if (this.phase === 'lobby' && this.order.filter(c => c !== CID).every(c => this.ready.has(c))) this.start(); }, 2000);
+    if (ok && !this.allReady) { toast('✅ Everyone is ready — tap Start game', 2500); Snd.turn(); }
+    this.allReady = ok;
   },
   // everyone still in the room votes, including players who exited the game to watch
   voters() { return this.seats.filter(c => c !== CID && this.conns.has(c)); },

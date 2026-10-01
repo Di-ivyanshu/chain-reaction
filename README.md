@@ -8,7 +8,7 @@ The explosive strategy game — in a single HTML file. **by Divyanshu**
 - **Chat** — talk to the room in the lobby and during the game; the board shrinks instead of being covered. One-tap **GG / LG!! / WP** and **spoken voice lines** ("Let's go!!", "Bhai kya move tha!"…).
 - **Push-to-talk voice chat** — hold the 🎙 button (or Space) to talk.
 - **Host handover** — if the host leaves or drops, the next player becomes host and the game carries on.
-- **Ready & rematch votes** — the game starts when everyone is ready; rematch when everyone votes.
+- **Ready & rematch votes** — players tap Ready and the host starts the game (Start lights up when everyone is ready, so late friends are never left behind); rematch when everyone votes.
 - **Undo** — take back your last move (online: before the next player moves; host can turn it off). Local games: unlimited undo, including the computer's reply.
 - **Turn timer** — Off / 15s / 30s / 60s. When time runs out a random move is played; 3 missed turns in a row and the player is removed.
 - **Exit & watch** — leave a running game but stay in the room to watch and chat.
