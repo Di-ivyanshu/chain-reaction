@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://0.peerjs.com" crossorigin>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#070914;--card:rgba(255,255,255,.045);--card2:rgba(255,255,255,.075);--line:rgba(255,255,255,.09);--text:#eef1ff;--muted:#8f97bd;--a1:#7c5cff;--a2:#22c6f0;--pc:#7c5cff;--hov:rgba(255,255,255,.11);--row:rgba(255,255,255,.035);--modal:#11142a;--toast:#1b1f3b;--scrim:rgba(4,5,14,.76);--ph:#5d6488;--segbg:rgba(0,0,0,.25);--inbg:rgba(255,255,255,.05)}
+:root{--bg:#070914;--card:rgba(255,255,255,.045);--card2:rgba(255,255,255,.075);--line:rgba(255,255,255,.09);--text:#eef1ff;--muted:#8f97bd;--a1:#7c5cff;--a2:#22c6f0;--pc:#7c5cff;--hov:rgba(255,255,255,.11);--row:rgba(255,255,255,.035);--modal:#11142a;--toast:#1b1f3b;--scrim:rgba(4,5,14,.76);--ph:#5d6488;--segbg:rgba(0,0,0,.25);--inbg:rgba(255,255,255,.05);--bubble:#252a4c}
 html,body{height:100%;background:var(--bg);color:var(--text);font:15px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
 body{background:radial-gradient(900px 520px at 0% 0%,rgba(124,92,255,.22),transparent 60%),radial-gradient(800px 500px at 100% 100%,rgba(34,198,240,.15),transparent 60%),var(--bg)}
 input,select{user-select:text;-webkit-user-select:text}
@@ -108,8 +108,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .chat-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
 .chat-empty{margin:auto;color:var(--muted);font-size:14px;text-align:center}
 .msg{display:flex;flex-direction:column;gap:2px;max-width:85%;align-self:flex-start;animation:pop .18s ease}
-.msg b{font-size:11px;color:var(--c);font-weight:800;padding:0 4px}
-.msg span{background:var(--card2);padding:8px 12px;border-radius:14px 14px 14px 4px;font-size:14px;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text}
+.msg b{font-size:12px;color:var(--c);font-weight:800;padding:0 4px}
+.msg span{background:var(--bubble);color:var(--text);padding:8px 12px;border-radius:14px 14px 14px 4px;font-size:15px;line-height:1.35;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text}
+.msg.voice span:before{content:"🔊 "}
 .msg.me{align-self:flex-end;align-items:flex-end}
 .msg.me span{background:linear-gradient(135deg,rgba(124,92,255,.55),rgba(34,198,240,.4));border-radius:14px 14px 4px 14px}
 .chat-in{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
@@ -143,7 +144,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .board{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:6px 10px;position:relative}
 #cv{display:block;touch-action:none;cursor:pointer}
 .gfoot{display:flex;justify-content:center;gap:6px;padding:6px 12px max(12px,env(safe-area-inset-bottom))}
-.gfoot button{width:42px;height:42px;flex:none;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:20px;transition:transform .12s,background .15s}
+.gfoot button{width:40px;height:40px;flex:none;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:20px;transition:transform .12s,background .15s}
 .gfoot button:hover{background:var(--card2)}
 .gfoot button:active{transform:scale(.86)}
 .gspace{height:max(12px,env(safe-area-inset-bottom))}
@@ -240,6 +241,35 @@ body.flat .toast{box-shadow:none}
 body.t-paper .toast{color:#fff}
 body.t-paper .pill{background:rgba(47,158,91,.12);color:#23804a}
 body.t-paper .pill.bad{background:rgba(214,69,69,.12);color:#b83a3a}
+/* in-game chat: the board shrinks instead of being covered */
+#s-game{transition:padding .18s ease}
+#s-game.chatting .gfoot{display:none}
+.chat.dock{top:12px;bottom:12px!important;height:auto!important;width:340px}
+.chat.typing .qchat,.chat.typing .vgrid{display:none}
+.chat-tools{display:flex;gap:6px}
+.chat-tools .icon.on{background:var(--hov);border-color:var(--muted)}
+.vgrid{display:flex;gap:6px;padding:8px 10px 0;overflow-x:auto;scrollbar-width:none;flex:none}
+.vgrid::-webkit-scrollbar{display:none}
+.chat.dock .vgrid{display:grid;grid-template-columns:1fr 1fr;max-height:220px;overflow-y:auto}
+.chat-list{min-height:72px}
+.vgrid button{flex:none;white-space:nowrap;padding:7px 11px;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:13px;font-weight:600;text-align:left;line-height:1.2}
+.vgrid button:active{transform:scale(.97)}
+.vgrid .vtoggle{color:var(--muted);font-weight:700}
+.chat.dock .vgrid .vtoggle{grid-column:1/-1;text-align:center}
+body.t-matte{--bubble:#2a2b31}
+body.t-paper{--bubble:#ebe8e1}
+/* lobby: teams, ready */
+button.team{cursor:pointer;border:1px solid var(--muted);color:var(--text)}
+.ready{font-size:11px;font-weight:800;color:#2bdc76;flex:none}
+body.t-paper .ready{color:#23804a}
+/* push-to-talk */
+.gfoot button.ptt{touch-action:none;-webkit-user-select:none;user-select:none}
+.gfoot button.ptt.on{border-color:#2bdc76}
+.gfoot button.ptt.live{background:#2bdc76;border-color:#2bdc76;transform:scale(1.08)}
+.gfoot button.ptt.wait{opacity:.5}
+.chip .mic{display:none}
+.chip.talk .mic{display:inline}
+.chip.talk i{box-shadow:0 0 0 3px var(--c)}
 </style>
 </head>
 <body>
@@ -292,6 +322,7 @@ body.t-paper .pill.bad{background:rgba(214,69,69,.12);color:#b83a3a}
     <div class="card">
       <div class="card-h"><h3>Players <span class="muted" id="l-count">1/8</span></h3><button class="btn sm ghost" id="b-look">🎨 My look</button></div>
       <ul class="plist" id="l-players"></ul>
+      <button class="btn sm hidden" id="b-ready">✋ I'm ready</button>
     </div>
     <div class="card">
       <h3>Board size</h3>
@@ -396,9 +427,10 @@ body.t-paper .pill.bad{background:rgba(214,69,69,.12);color:#b83a3a}
 </div></div>
 
 <div class="chat" id="chat" role="dialog" aria-label="Chat">
-  <div class="chat-h"><b>💬 Chat</b><button class="icon" id="chat-x" aria-label="Close chat">✕</button></div>
+  <div class="chat-h"><b>💬 Chat</b><span class="chat-tools"><button class="icon" id="chat-vt" aria-label="Voice lines" title="Voice lines">🔊</button><button class="icon" id="chat-x" aria-label="Close chat">✕</button></span></div>
   <div class="chat-list" id="chat-list"><p class="chat-empty">No messages yet — say hi 👋</p></div>
   <div class="qchat" id="qchat"></div>
+  <div class="vgrid hidden" id="vgrid"></div>
   <form class="chat-in" id="chat-form" autocomplete="off"><input class="in" id="chat-text" maxlength="200" placeholder="Type a message…" enterkeyhint="send" spellcheck="true"><button class="btn primary sm" type="submit">Send</button></form>
 </div>
 
@@ -576,14 +608,29 @@ const THEMES = [{ id: 'neon', label: 'Neon' }, { id: 'matte', label: 'Matte Dark
 let THEME = 'neon';
 let COLORS = PALETTES.neon;
 const AVATARS = ['😎', '🦊', '🐼', '🐯', '🐸', '🐙', '🦄', '🐲', '👾', '🤖', '👻', '🎃', '🐧', '🦁', '🐵', '🐝'];
-const QUICK = ['Nice move! 👏', 'GG 🤝', 'Hurry up 😴', 'Oops 😅', 'Good luck 🍀', 'Rematch? 🔁', 'Wow 🤯', 'Haha 😂'];
+const QUICK = ['GG 🤝', 'LG!! 🚀', 'WP 👏', 'Nice move! 👍', 'Oops 😅', 'Hurry up 😴', 'Rematch? 🔁', 'Haha 😂'];
+// spoken voice lines (text-to-speech on every player's device); only these can be spoken
+const VOICE = [
+  { t: 'Good game!' }, { t: 'Well played!' }, { t: "Let's go!!" }, { t: 'Good luck!' },
+  { t: 'Nice move!' }, { t: 'Hurry up!' }, { t: 'Boom!' }, { t: 'Oh no!' },
+  { t: 'Revenge time!' }, { t: 'Not again!' }, { t: 'Too easy!' }, { t: 'Bhai kya move tha!' },
+  { t: 'Jaldi kar yaar!' }, { t: 'Ab dekh!' }, { t: 'Gaya tu!' }, { t: 'Wait for it…' }
+];
 function validC(c) { return Number.isInteger(c) && c >= 0 && c < 8; }
 function validAv(a) { return AVATARS.includes(a); }
 function teamName(t) { return 'Team ' + 'AB'[t & 1]; }
-function teamsOk(n) { return n >= 4 && n % 2 === 0; }
+// team games need at least one player on each side
+function teamsValid(ts) { return ts.length >= 2 && ts.includes(0) && ts.includes(1); }
+// seat order alternates teams so turns go A, B, A, B…
+function interleaveTeams(list, tOf) {
+  const a = list.filter(x => tOf(x) === 0), b = list.filter(x => tOf(x) === 1), out = [];
+  const [p, q] = list.length && tOf(list[0]) === 1 ? [b, a] : [a, b];
+  for (let i = 0; out.length < list.length; i++) { if (i < p.length) out.push(p[i]); if (i < q.length) out.push(q[i]); }
+  return out;
+}
 const GRIDS = [{ id: 's', label: 'Small', r: 7, c: 5 }, { id: 'm', label: 'Classic', r: 9, c: 6 }, { id: 'l', label: 'Large', r: 12, c: 8 }, { id: 'x', label: 'Huge', r: 15, c: 10 }];
 const TIMERS = [0, 15, 30, 60];
-const EMOJIS = ['👍', '😂', '😮', '😡', '🔥', '👏'];
+const EMOJIS = ['👍', '😂', '😡', '🔥', '👏'];
 const PEER_PREFIX = 'chainrx-dv1-';
 const CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const DROP_MS = 40000;
@@ -638,6 +685,7 @@ function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === 's-' + id));
   screen = id;
   if (id === 'game') startLoop(); else stopLoop();
+  chatFit();
 }
 function ov(id, on) { $('#ov-' + id).classList.toggle('on', on); }
 function toast(msg, ms) {
@@ -731,7 +779,7 @@ const V = {
   fly: [], flyT0: 0, flyDur: 1, rings: [], pops: new Map(), bad: null, hover: -1, down: -1,
   lineCol: [124, 92, 255], lineTarget: [124, 92, 255], lt: 0, queue: [], cur: null
 };
-const G = { mode: null, mySeat: -1, presence: null, pending: false, pendT: 0, idleKey: '', botT: 0, turnT: 0, turnEnd: 0, nextTl: 0, tsecShown: -1 };
+const G = { mode: null, mySeat: -1, presence: null, pending: false, pendT: 0, idleKey: '', botT: 0, turnT: 0, turnEnd: 0, nextTl: 0, tsecShown: -1, talking: new Set(), myVote: false, myReady: false };
 
 // one orb image; neon = glossy with glow, matte themes = flat with soft light
 function makeOrb(hex, R, theme) {
@@ -1005,7 +1053,7 @@ function updateHUD() {
     const me = G.mode !== 'local' && k === G.mySeat;
     const off = G.mode !== 'local' && G.presence && G.presence[k] === false && !p.out;
     const tap = G.mode === 'host' && k !== G.mySeat && !p.left;
-    h += `<div data-k="${k}" title="${tap ? 'Tap to kick' : ''}" class="chip${tap ? ' tap' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${p.av ? p.av + ' ' : ''}${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null && !p.av ? ' 🤖' : ''}</span>${s.teams ? `<span class="team">${'AB'[p.t & 1]}</span>` : ''}<b>${counts[k]}</b></div>`;
+    h += `<div data-k="${k}" title="${tap ? 'Tap to kick' : ''}" class="chip${tap ? ' tap' : ''}${G.talking.has(seatPid(k)) ? ' talk' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${p.av ? p.av + ' ' : ''}${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null && !p.av ? ' 🤖' : ''}<span class="mic"> 🎙</span></span>${s.teams ? `<span class="team">${'AB'[p.t & 1]}</span>` : ''}<b>${counts[k]}</b></div>`;
   });
   el.innerHTML = h;
   const on = el.querySelector('.chip.on');
@@ -1090,7 +1138,7 @@ function beginGame(s) {
   ov('win', false); clearConfetti(); busyOff();
   clearTimeout(G.botT); clearTimeout(G.turnT); G.turnEnd = 0;
   V.queue.length = 0; V.cur = null; V.fly.length = 0; V.rings.length = 0; V.pops.clear(); V.bad = null;
-  G.pending = false; G.idleKey = '';
+  G.pending = false; G.idleKey = ''; G.myVote = false;
   V.cs = 0;
   setView(s);
   V.lineCol = hexRgb(COLORS[s.pl[s.turn].c]);
@@ -1138,20 +1186,30 @@ function showWin(s) {
   $('#w-sub').textContent = sub;
   $('#w-stats').innerHTML = `<div><b>${s.moves}</b><span>Moves</span></div><div><b>${s.maxChain}</b><span>Best chain</span></div><div><b>${s.pl.length}</b><span>Players</span></div>`;
   const again = $('#w-again'), alt = $('#w-alt'), wait = $('#w-wait'), leave = $('#w-leave');
-  again.classList.toggle('hidden', G.mode === 'client');
-  wait.classList.toggle('hidden', G.mode !== 'client');
+  wait.classList.toggle('hidden', G.mode === 'local');
   leave.classList.toggle('hidden', G.mode !== 'host');
-  $('#ov-win .row2').style.gridTemplateColumns = G.mode === 'client' ? '1fr' : '';
+  $('#ov-win .row2').style.gridTemplateColumns = '';
   if (G.mode === 'local') { again.textContent = 'Play again'; alt.textContent = 'Home'; }
-  else if (G.mode === 'host') { again.textContent = 'Play again'; alt.textContent = 'Lobby'; leave.textContent = 'Close room'; }
-  else { alt.textContent = 'Leave room'; wait.textContent = 'Waiting for the host to start a new game…'; }
+  else if (G.mode === 'host') { again.textContent = 'Play again now'; alt.textContent = 'Lobby'; leave.textContent = 'Close room'; wait.textContent = '🔁 Rematch starts automatically when everyone votes'; }
+  else { again.textContent = G.myVote ? '✓ Voted' : '🔁 Vote rematch'; alt.textContent = 'Leave room'; wait.textContent = '🔁 Vote to play again — it starts when everyone votes'; }
+  if (G.votes && G.mode !== 'local') updVotes(G.votes);
   if (iWon) { confetti(col); Snd.win(); }
   ov('win', true);
 }
 $('#w-again').onclick = () => {
   if (G.mode === 'local') localStart(L.cfg);
   else if (G.mode === 'host') Host.rematch();
+  else if (G.mode === 'client') {
+    G.myVote = !G.myVote;
+    Client.send({ t: 'vote', on: G.myVote });
+    $('#w-again').textContent = G.myVote ? '✓ Voted' : '🔁 Vote rematch';
+  }
 };
+function updVotes(d) {
+  G.votes = d;
+  if (!$('#ov-win').classList.contains('on') || !d || !d.of) return;
+  $('#w-wait').textContent = `🔁 Rematch votes: ${d.n}/${d.of}` + (d.n < d.of ? ' — starts when everyone votes' : ' — starting…');
+}
 $('#w-alt').onclick = () => {
   if (G.mode === 'local') goHome();
   else if (G.mode === 'host') Host.toLobby();
@@ -1167,6 +1225,7 @@ for (let k = 0; k < 8; k++) if (!LS.players[k] || typeof LS.players[k] !== 'obje
 LS.n = Math.min(8, Math.max(2, LS.n | 0));
 if (!TIMERS.includes(LS.timer)) LS.timer = 0;
 LS.teams = LS.teams === true;
+LS.players.forEach((p, k) => { if (p.t !== 0 && p.t !== 1) p.t = k & 1; });
 // every local player gets a unique colour and an avatar
 (() => {
   const used = new Set();
@@ -1179,15 +1238,16 @@ function renderLocal() {
   $('#pl-minus').disabled = LS.n <= 2; $('#pl-plus').disabled = LS.n >= 8;
   const opts = [['h', 'Human'], ['b0', 'Bot · Easy'], ['b1', 'Bot · Normal'], ['b2', 'Bot · Hard']];
   $('#loc-players').innerHTML = LS.players.slice(0, LS.n).map((p, k) =>
-    `<li><button class="look" data-look="${k}" style="--c:${COLORS[p.c]}" aria-label="Change colour and avatar" title="Change colour & avatar">${p.av}</button>${LS.teams ? `<span class="team">${'AB'[k & 1]}</span>` : ''}<input class="in" data-k="${k}" maxlength="16" placeholder="${p.type !== 'h' ? 'Bot ' + (k + 1) : k === 0 ? esc(myName()) : 'Player ' + (k + 1)}" value="${esc(p.name)}" spellcheck="false"><select class="sel" data-k="${k}">${opts.map(o => `<option value="${o[0]}"${o[0] === p.type ? ' selected' : ''}>${o[1]}</option>`).join('')}</select></li>`).join('');
+    `<li><button class="look" data-look="${k}" style="--c:${COLORS[p.c]}" aria-label="Change colour and avatar" title="Change colour & avatar">${p.av}</button>${LS.teams ? `<button class="team" data-lt="${k}" title="Tap to switch team">${'AB'[p.t & 1]}</button>` : ''}<input class="in" data-k="${k}" maxlength="16" placeholder="${p.type !== 'h' ? 'Bot ' + (k + 1) : k === 0 ? esc(myName()) : 'Player ' + (k + 1)}" value="${esc(p.name)}" spellcheck="false"><select class="sel" data-k="${k}">${opts.map(o => `<option value="${o[0]}"${o[0] === p.type ? ' selected' : ''}>${o[1]}</option>`).join('')}</select></li>`).join('');
   $('#loc-grid').innerHTML = segHTML(LS.grid);
   $('#loc-timer').innerHTML = timerSegHTML(LS.timer);
   $('#loc-teams').innerHTML = teamSegHTML(LS.teams);
-  const bad = LS.teams && !teamsOk(LS.n), st = $('#b-loc-start');
+  const ts = LS.players.slice(0, LS.n).map(p => p.t & 1);
+  const bad = LS.teams && !teamsValid(ts), st = $('#b-loc-start');
   st.disabled = bad;
-  st.textContent = bad ? 'Teams need 4, 6 or 8 players' : 'Start game';
+  st.textContent = bad ? 'Put at least one player in each team' : LS.teams ? `Start game · ${ts.filter(t => !t).length} vs ${ts.filter(t => t).length}` : 'Start game';
 }
-function teamSegHTML(on) { return `<button data-tm="0" class="${on ? '' : 'on'}">Off<small>every player for themselves</small></button><button data-tm="1" class="${on ? 'on' : ''}">2 teams<small>A vs B · 4, 6 or 8 players</small></button>`; }
+function teamSegHTML(on) { return `<button data-tm="0" class="${on ? '' : 'on'}">Off<small>every player for themselves</small></button><button data-tm="1" class="${on ? 'on' : ''}">2 teams<small>A vs B · tap A/B to switch</small></button>`; }
 function timerSegHTML(sel) { return TIMERS.map(v => `<button data-t="${v}" class="${v === sel ? 'on' : ''}">${v ? v + 's' : 'Off'}<small>${v ? 'per turn' : 'no limit'}</small></button>`).join(''); }
 function segHTML(sel) { return GRIDS.map(g => `<button data-g="${g.id}" class="${g.id === sel ? 'on' : ''}">${g.label}<small>${g.c}×${g.r}</small></button>`).join(''); }
 $('#loc-players').addEventListener('input', e => {
@@ -1202,6 +1262,8 @@ $('#pl-minus').onclick = () => { if (LS.n > 2) { LS.n--; saveLS(); renderLocal()
 $('#pl-plus').onclick = () => { if (LS.n < 8) { LS.n++; saveLS(); renderLocal(); } };
 $('#loc-teams').onclick = e => { const b = e.target.closest('button'); if (!b) return; LS.teams = b.dataset.tm === '1'; saveLS(); renderLocal(); };
 $('#loc-players').addEventListener('click', e => {
+  const tb = e.target.closest('[data-lt]');
+  if (tb) { const p = LS.players[+tb.dataset.lt]; p.t = p.t ? 0 : 1; saveLS(); renderLocal(); return; }
   const b = e.target.closest('[data-look]'); if (!b) return;
   const k = +b.dataset.look, me = LS.players[k];
   openPicker({
@@ -1223,17 +1285,18 @@ $('#b-loc-start').onclick = () => {
     const bot = p.type === 'h' ? null : +p.type[1];
     let name = cleanName(p.name);
     if (!name) name = bot != null ? (LS.n === 2 ? 'Computer' : 'Bot ' + (k + 1)) : (k === 0 ? myName() : 'Player ' + (k + 1));
-    return { name, bot, c: p.c, av: p.av };
+    return { name, bot, c: p.c, av: p.av, t: p.t & 1 };
   });
-  if (LS.teams && !teamsOk(LS.n)) { toast('Team mode needs 4, 6 or 8 players'); return; }
-  localStart({ grid: LS.grid, timer: LS.timer, teams: LS.teams, players });
+  if (LS.teams && !teamsValid(players.map(p => p.t))) { toast('Put at least one player in each team'); return; }
+  localStart({ grid: LS.grid, timer: LS.timer, teams: LS.teams, players: LS.teams ? interleaveTeams(players, p => p.t) : players });
 };
 function localStart(cfg) {
   G.mode = 'local'; G.mySeat = -1; G.presence = null;
   L.cfg = cfg;
   const g = gridById(cfg.grid);
-  const teams = !!cfg.teams && teamsOk(cfg.players.length);
-  L.state = newGame(g.r, g.c, cfg.players.map((p, k) => ({ name: p.name, c: validC(p.c) ? p.c : k, av: validAv(p.av) ? p.av : '', t: k & 1, bot: p.bot })), cfg.timer || 0, true, teams);
+  const tOf = (p, k) => (p.t === 0 || p.t === 1) ? p.t : k & 1;
+  const teams = !!cfg.teams && teamsValid(cfg.players.map(tOf));
+  L.state = newGame(g.r, g.c, cfg.players.map((p, k) => ({ name: p.name, c: validC(p.c) ? p.c : k, av: validAv(p.av) ? p.av : '', t: tOf(p, k), bot: p.bot })), cfg.timer || 0, true, teams);
   L.hist = [];
   saveLocal();
   beginGame(L.state);
@@ -1280,6 +1343,7 @@ function goHome() {
   if (menuDone) menuDone(null);
   clearTimeout(G.botT); clearTimeout(G.turnT); G.turnEnd = 0;
   chatToggle(false); chatReset([]);
+  Vc.stop(true); G.talking.clear(); G.votes = null; G.myReady = false;
   pick = null;
   ['win', 'busy', 'rules', 'pick'].forEach(o => ov(o, false));
   clearConfetti();
@@ -1339,12 +1403,17 @@ $('#g-menu').onclick = async () => {
   const playing = !!s && s.winner < 0 && G.mySeat >= 0 && !s.pl[G.mySeat].out;
   const items = [];
   if (playing) items.push({ k: 'resign', label: '🏳️ Exit game & watch', cls: 'primary' });
-  items.push(host ? { k: 'close', label: '🚪 Close room for everyone', cls: 'danger' } : { k: 'leave', label: '🚪 Leave room', cls: 'danger' });
+  if (Vc.on) items.push({ k: 'voff', label: '🎙 Turn off voice chat' });
+  const next = host ? Host.successorCid() : null;
+  if (host && next) items.push({ k: 'handover', label: `🚪 Leave (${Host.nameOf(next)} becomes host)`, cls: 'danger' });
+  items.push(host ? { k: 'close', label: '✖ Close room for everyone', cls: next ? '' : 'danger' } : { k: 'leave', label: '🚪 Leave room', cls: 'danger' });
   const text = playing
     ? "Exit this game but stay in the room to watch and chat — you'll play the next round. Or leave completely."
-    : host ? 'Closing the room disconnects everyone.' : 'Leave this room?';
+    : host ? (next ? 'Leave and pass the room to the next player, or close it for everyone.' : 'Closing the room disconnects everyone.') : 'Leave this room?';
   const k = await menu(playing ? 'Exit game' : 'Leave', text, items);
   if (k === 'resign') { if (host) Host.resign(CID); else Client.send({ t: 'resign' }); }
+  else if (k === 'voff') Vc.stop();
+  else if (k === 'handover') Host.handover();
   else if (k === 'close') Host.close();
   else if (k === 'leave') Client.leave();
 };
@@ -1356,7 +1425,7 @@ $('#g-chips').onclick = async e => {
   const r = await menu(p.name, 'Remove this player from the room? They won\'t be able to rejoin.', [{ k: 'kick', label: '🚫 Kick ' + p.name, cls: 'danger' }]);
   if (r === 'kick' && G.mode === 'host') Host.kickSeat(k);
 };
-$('#g-foot').innerHTML = EMOJIS.map(e => `<button data-e="${e}" aria-label="React ${e}">${e}</button>`).join('') + '<button class="cbtn chat-open" data-n="0" aria-label="Open chat">💬</button>';
+$('#g-foot').innerHTML = EMOJIS.map(e => `<button data-e="${e}" aria-label="React ${e}">${e}</button>`).join('') + '<button class="cbtn chat-open" data-n="0" aria-label="Open chat">💬</button><button class="ptt" id="g-ptt" aria-label="Voice chat: tap to join, then hold to talk" title="Voice chat — hold to talk (or hold Space)">🎙</button>';
 let lastEmoji = 0;
 $('#g-foot').onclick = e => {
   const b = e.target.closest('button[data-e]'); if (!b) return;
@@ -1370,7 +1439,7 @@ function chatBadge() { document.querySelectorAll('.chat-open').forEach(b => b.da
 function chatMsgEl(m) {
   const d = document.createElement('div');
   const me = m.pid === myPid();
-  d.className = 'msg' + (me ? ' me' : '');
+  d.className = 'msg' + (me ? ' me' : '') + (m.v != null ? ' voice' : '');
   d.style.setProperty('--c', m.ci >= 0 ? COLORS[m.ci] : 'var(--muted)');
   const b = document.createElement('b'); b.textContent = (m.av ? m.av + ' ' : '') + (me ? 'You' : m.name);
   const t = document.createElement('span'); t.textContent = m.text;
@@ -1379,9 +1448,10 @@ function chatMsgEl(m) {
 }
 function cleanMsg(m) {
   if (!m || typeof m !== 'object') return null;
-  const text = String(m.text == null ? '' : m.text).replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 200);
+  const v = Number.isInteger(m.v) && VOICE[m.v] ? m.v : null;
+  const text = v != null ? VOICE[v].t : String(m.text == null ? '' : m.text).replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 200);
   if (!text) return null;
-  return { name: cleanName(m.name) || 'Player', ci: validC(m.ci) ? m.ci : -1, av: validAv(m.av) ? m.av : '', text, pid: String(m.pid || '') };
+  return { name: cleanName(m.name) || 'Player', ci: validC(m.ci) ? m.ci : -1, av: validAv(m.av) ? m.av : '', text, pid: String(m.pid || ''), v };
 }
 function chatAdd(m, silent) {
   m = cleanMsg(m); if (!m) return;
@@ -1392,6 +1462,7 @@ function chatAdd(m, silent) {
   while (box.children.length > 100) box.firstChild.remove();
   box.scrollTop = box.scrollHeight;
   if (silent) return;
+  if (m.v != null) Speech.say(VOICE[m.v]);
   const mine = m.pid === myPid();
   if (!mine) Snd.tone(740, 980, .07, 'sine', .05);
   if (!Chat.open && !mine) { Chat.unread++; chatBadge(); toast('💬 ' + (m.av ? m.av + ' ' : '') + m.name + ': ' + (m.text.length > 60 ? m.text.slice(0, 60) + '…' : m.text), 3000); }
@@ -1402,15 +1473,31 @@ function chatReset(list) {
   (Array.isArray(list) ? list : []).forEach(m => chatAdd(m, true));
   chatBadge();
 }
+// In a game the chat never covers the board: on wide screens it docks beside it, on phones the board
+// shrinks to the space above the chat (and above the keyboard while typing).
 function chatFit() {
-  const c = $('#chat'), vv = window.visualViewport;
+  const c = $('#chat'), g = $('#s-game'), vv = window.visualViewport;
   const kb = vv && Chat.open ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
-  if (kb > 60) {
-    c.style.bottom = kb + 'px';
-    c.style.height = Math.round(Math.min(420, vv.height * .5)) + 'px';
-  } else { c.style.bottom = ''; c.style.height = ''; }
+  const inGame = Chat.open && screen === 'game', wide = window.innerWidth >= 900;
+  c.classList.toggle('typing', kb > 60);
+  c.classList.toggle('dock', inGame && wide);
+  g.classList.toggle('chatting', inGame);
+  if (inGame && wide) {
+    c.style.bottom = ''; c.style.height = '';
+    g.style.paddingBottom = ''; g.style.paddingRight = (340 + 24) + 'px';
+  } else if (inGame) {
+    const visH = vv ? vv.height : window.innerHeight;
+    const h = Math.round(Math.min(kb > 60 ? 260 : 330, visH * (kb > 60 ? .5 : .42)));
+    c.style.bottom = kb + 'px'; c.style.height = h + 'px';
+    g.style.paddingBottom = (h + kb) + 'px'; g.style.paddingRight = '';
+  } else {
+    g.style.paddingBottom = ''; g.style.paddingRight = '';
+    if (kb > 60) { c.style.bottom = kb + 'px'; c.style.height = Math.round(Math.min(420, vv.height * .5)) + 'px'; }
+    else { c.style.bottom = ''; c.style.height = ''; }
+  }
 }
 if (window.visualViewport) { visualViewport.addEventListener('resize', chatFit); visualViewport.addEventListener('scroll', chatFit); }
+window.addEventListener('resize', chatFit);
 function chatToggle(on) {
   Chat.open = on;
   $('#chat').classList.toggle('on', on);
@@ -1436,6 +1523,163 @@ $('#chat-form').onsubmit = e => {
 };
 $('#qchat').innerHTML = QUICK.map(q => `<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
 $('#qchat').onclick = e => { const b = e.target.closest('[data-q]'); if (b) sendChat(b.dataset.q); };
+
+/* ---------- spoken voice lines ---------- */
+const Speech = {
+  on: store.get('cr_voice', true), voice: null, unlocked: false,
+  ok() { return 'speechSynthesis' in window && typeof SpeechSynthesisUtterance === 'function'; },
+  pick() { if (!this.ok()) return; const vs = speechSynthesis.getVoices(); this.voice = vs.find(v => v.lang === 'en-IN') || vs.find(v => /^en[-_]IN/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null; },
+  say(vl) {
+    if (!this.on || !vl || !this.ok()) return;
+    try {
+      if (speechSynthesis.pending) speechSynthesis.cancel();
+      if (!this.voice) this.pick();
+      const u = new SpeechSynthesisUtterance(vl.t.replace(/…/g, '...'));
+      if (this.voice) { u.voice = this.voice; u.lang = this.voice.lang; } else u.lang = 'en-IN';
+      u.rate = 1.05;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+};
+if (Speech.ok() && speechSynthesis.addEventListener) speechSynthesis.addEventListener('voiceschanged', () => Speech.pick());
+// iOS only allows speech after a tap has spoken once
+document.addEventListener('pointerdown', () => {
+  if (Speech.unlocked || !Speech.ok()) return;
+  Speech.unlocked = true;
+  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) {}
+}, true);
+function renderVoiceGrid() {
+  $('#vgrid').innerHTML = `<button type="button" class="vtoggle" data-vt>${Speech.on ? '🔊 Voices on — tap to mute' : '🔇 Voices muted — tap to hear them'}</button>` +
+    VOICE.map((v, k) => `<button type="button" data-v="${k}">${esc(v.t)}</button>`).join('');
+}
+renderVoiceGrid();
+let lastVoice = 0;
+$('#vgrid').onclick = e => {
+  if (e.target.closest('[data-vt]')) { Speech.on = !Speech.on; store.set('cr_voice', Speech.on); if (!Speech.on && Speech.ok()) speechSynthesis.cancel(); renderVoiceGrid(); return; }
+  const b = e.target.closest('[data-v]'); if (!b) return;
+  const now = Date.now();
+  if (now - lastVoice < 3000) { toast('Wait a moment before the next voice line', 1400); return; }
+  lastVoice = now;
+  const v = +b.dataset.v;
+  if (G.mode === 'host') Host.chat(CID, '', v);
+  else if (G.mode === 'client') Client.send({ t: 'chat', v });
+};
+$('#chat-vt').onclick = () => {
+  const g = $('#vgrid'), on = g.classList.toggle('hidden');
+  $('#chat-vt').classList.toggle('on', !on);
+};
+
+/* ---------- push-to-talk voice chat (direct WebRTC audio between players who turned it on) ---------- */
+function netSend(msg) { if (G.mode === 'host') Host.handle(CID, msg, null); else if (G.mode === 'client') Client.send(msg); }
+function seatPid(k) { return G.mode === 'host' ? (Host.seats[k] ? Host.pidOf(Host.seats[k]) : '') : (Client.seats[k] || ''); }
+const talkT = new Map();
+function setTalking(pid, on) {
+  clearTimeout(talkT.get(pid));
+  if (on) { G.talking.add(pid); talkT.set(pid, setTimeout(() => setTalking(pid, false), 20000)); }
+  else G.talking.delete(pid);
+  if (screen === 'game') updateHUD();
+}
+const Vc = {
+  on: false, joining: false, peer: null, stream: null, ids: {}, calls: new Map(), audio: new Map(), talking: false, warned: false,
+  async join() {
+    if (this.on || this.joining) return;
+    if (G.mode !== 'host' && G.mode !== 'client') return;
+    this.joining = true; updPtt();
+    try { await loadPeer(); } catch (e) {}
+    if (!window.Peer || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { this.joining = false; updPtt(); toast('Voice chat is not available in this browser'); return; }
+    try { this.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); }
+    catch (e) { this.joining = false; updPtt(); toast('🎙 Allow the microphone to use voice chat', 3000); return; }
+    this.stream.getAudioTracks().forEach(t => { t.enabled = false; });
+    let peer;
+    try { peer = new Peer({ debug: 0, config: ICE }); } catch (e) { this.stop(true); return; }
+    this.peer = peer;
+    peer.on('open', id => {
+      if (peer !== this.peer) return;
+      this.on = true; this.joining = false; updPtt();
+      netSend({ t: 'vjoin', id });
+      toast('🎙 Voice on — hold the mic button (or Space) to talk', 3000);
+    });
+    peer.on('call', call => {
+      if (peer !== this.peer || !this.stream) { try { call.close(); } catch (e) {} return; }
+      call.answer(this.stream); this.track(call);
+    });
+    peer.on('error', () => {});
+    setTimeout(() => { if (this.joining && peer === this.peer) { this.stop(true); toast("Couldn't start voice chat — try again"); } }, 15000);
+  },
+  track(call) {
+    const old = this.calls.get(call.peer);
+    if (old && old !== call) { try { old.close(); } catch (e) {} }
+    this.calls.set(call.peer, call);
+    call.on('stream', s => {
+      let a = this.audio.get(call.peer);
+      if (!a) { a = new Audio(); a.autoplay = true; a.playsInline = true; this.audio.set(call.peer, a); }
+      a.srcObject = s; a.play().catch(() => {});
+    });
+    call.on('close', () => {
+      if (this.calls.get(call.peer) === call) this.calls.delete(call.peer);
+      const a = this.audio.get(call.peer); if (a) { a.srcObject = null; this.audio.delete(call.peer); }
+    });
+    const pc = call.peerConnection;
+    if (pc) pc.addEventListener('iceconnectionstatechange', () => {
+      if (pc.iceConnectionState === 'failed' && !this.warned) { this.warned = true; toast("🎙 Voice can't connect on this network — chat and voice lines still work", 4500); }
+    });
+  },
+  // ids: {pid: voicePeerId} of everyone with voice on; the lower pid of each pair places the call
+  sync(ids) {
+    this.ids = ids && typeof ids === 'object' ? ids : {};
+    if (!this.on || !this.peer) return;
+    const me = myPid(), want = new Set();
+    for (const [pid, id] of Object.entries(this.ids)) {
+      if (pid === me || typeof id !== 'string' || id === this.peer.id) continue;
+      want.add(id);
+      if (me < pid && !this.calls.has(id)) { try { const call = this.peer.call(id, this.stream, { metadata: { pid: me } }); if (call) this.track(call); } catch (e) {} }
+    }
+    for (const [id, call] of [...this.calls]) if (!want.has(id)) { try { call.close(); } catch (e) {} }
+  },
+  talk(on) {
+    on = !!on;
+    if (!this.on || !this.stream || this.talking === on) return;
+    this.talking = on;
+    this.stream.getAudioTracks().forEach(t => { t.enabled = on; });
+    netSend({ t: 'talk', on });
+    updPtt();
+  },
+  stop(silent) {
+    const was = this.on;
+    if (was && !silent) netSend({ t: 'vleave' });
+    this.on = false; this.joining = false; this.talking = false;
+    for (const c of this.calls.values()) { try { c.close(); } catch (e) {} }
+    this.calls.clear();
+    for (const a of this.audio.values()) a.srcObject = null;
+    this.audio.clear();
+    if (this.stream) this.stream.getTracks().forEach(t => t.stop());
+    this.stream = null;
+    if (this.peer) { try { this.peer.destroy(); } catch (e) {} }
+    this.peer = null;
+    updPtt();
+    if (was && !silent) toast('🎙 Voice chat off', 1500);
+  }
+};
+function updPtt() {
+  const b = $('#g-ptt'); if (!b) return;
+  b.classList.toggle('on', Vc.on); b.classList.toggle('live', Vc.talking); b.classList.toggle('wait', Vc.joining);
+  b.title = Vc.on ? 'Hold to talk (or hold Space)' : 'Tap to turn on voice chat';
+}
+(() => {
+  const b = $('#g-ptt');
+  b.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    if (!Vc.on) { Vc.join(); return; }
+    try { b.setPointerCapture(e.pointerId); } catch (err) {}
+    Vc.talk(true);
+  });
+  const up = () => Vc.talk(false);
+  b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('lostpointercapture', up);
+  b.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => { if (e.code === 'Space' && !e.repeat && Vc.on && screen === 'game' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); Vc.talk(true); } });
+  document.addEventListener('keyup', e => { if (e.code === 'Space') Vc.talk(false); });
+  window.addEventListener('blur', () => Vc.talk(false));
+})();
 function showEmoji(e, name, ci) {
   if (screen !== 'game' || !EMOJIS.includes(e)) return;
   const box = $('#g-float');
@@ -1452,6 +1696,8 @@ function showEmoji(e, name, ci) {
 window.addEventListener('beforeunload', e => {
   if ((G.mode === 'host' && Host.opened) || (G.mode === 'client' && screen === 'game' && V.s && V.s.winner < 0)) { e.preventDefault(); e.returnValue = ''; }
 });
+// host closing the tab: pass the room on right away instead of making everyone wait for a timeout
+window.addEventListener('pagehide', () => { if (G.mode === 'host' && Host.opened) Host.handover(true); });
 
 /* ---------- networking ---------- */
 let peerLoad = null;
@@ -1551,23 +1797,26 @@ class RelayConn {
   constructor(mq, out, from) { this.mq = mq; this.out = out; this.from = from; this.open = true; this.relay = true; this.h = {}; this.onClosed = null; }
   on(ev, fn) { (this.h[ev] = this.h[ev] || []).push(fn); }
   emit(ev, a) { for (const f of this.h[ev] || []) { try { f(a); } catch (e) { console.error(e); } } }
-  wrap(m) { return JSON.stringify(this.from ? { f: this.from, m } : { m }); }
+  // host->client messages carry the host's key so a client never mixes up two hosts during a handover
+  wrap(m) { return JSON.stringify(this.from ? { f: this.from, m } : { m, hk: RelayHost.hk }); }
   send(msg) { if (this.open) this.mq.pub(this.out, this.wrap(msg)); }
   close() {
     if (!this.open) return;
-    this.mq.pub(this.out, JSON.stringify(this.from ? { f: this.from, x: 1 } : { x: 1 }));
+    this.mq.pub(this.out, JSON.stringify(this.from ? { f: this.from, x: 1 } : { x: 1, hk: RelayHost.hk }));
     this.drop();
   }
   drop() { if (!this.open) return; this.open = false; if (this.onClosed) this.onClosed(); setTimeout(() => this.emit('close'), 0); }
 }
 // host side: listens on every broker; each client appears as a RelayConn handed to Host.onConn
 const RelayHost = {
-  mqs: [], conns: new Map(), code: '', gen: 0,
+  mqs: [], conns: new Map(), code: '', gen: 0, hk: '', beaconT: 0,
   up() { return this.mqs.length > 0; },
-  start(code, onReady) {
+  start(code, onReady, hk) {
     this.stop();
-    this.code = code;
+    this.code = code; this.hk = hk || '';
     const gen = this.gen;
+    // every host announces itself on the room topic; an older host that hears a newer one steps down
+    this.beaconT = setInterval(() => this.beacon(), 10000);
     let ready = false;
     const once = () => { if (!ready && gen === this.gen) { ready = true; onReady(); } };
     for (const url of BROKERS) this.link(url, gen, once);
@@ -1583,6 +1832,7 @@ const RelayHost = {
       if (gen !== this.gen) { mq.close(); return; }
       this.mqs.push(mq);
       mq.sub(RELAY_BASE + this.code + '/h');
+      this.beacon(mq);
       onUp(); Host.netChanged();
     }).catch(() => {
       // a broker that keeps failing is retried less and less often (8s, 16s, ... up to 60s)
@@ -1590,8 +1840,14 @@ const RelayHost = {
       if (gen === this.gen) setTimeout(() => { if (gen === this.gen) this.link(url, gen, onUp, next); }, next);
     });
   },
+  beacon(only) {
+    if (!this.hk) return;
+    const msg = JSON.stringify({ f: '~', bh: { hk: this.hk, epoch: Host.epoch } });
+    for (const m of only ? [only] : this.mqs) m.pub(RELAY_BASE + this.code + '/h', msg);
+  },
   onMsg(mq, payload) {
     let d; try { d = JSON.parse(payload); } catch (e) { return; }
+    if (d && d.bh && typeof d.bh === 'object') { if (d.bh.hk !== this.hk) Host.seenHost(d.bh); return; }
     if (!d || typeof d.f !== 'string' || !d.f || d.f.length > 40) return;
     const key = d.f;
     let c = this.conns.get(key);
@@ -1613,6 +1869,7 @@ const RelayHost = {
   },
   stop() {
     this.gen++;
+    clearInterval(this.beaconT); this.beaconT = 0;
     for (const m of this.mqs) m.close();
     this.mqs = [];
     for (const c of [...this.conns.values()]) c.drop();
@@ -1621,7 +1878,7 @@ const RelayHost = {
 };
 // client side: try each broker until the host answers; onFail('notfound') = brokers fine but no host, 'timeout' = no broker reachable
 function relayConnect(code, onOpen, onFail) {
-  let stopped = false, cur = null, conn = null, idx = 0, reached = false, ackT = 0;
+  let stopped = false, cur = null, conn = null, idx = 0, reached = false, ackT = 0, boundHk = null;
   const id = rid(12), inT = RELAY_BASE + code + '/c/' + id, outT = RELAY_BASE + code + '/h';
   const next = () => {
     if (stopped) return;
@@ -1630,11 +1887,12 @@ function relayConnect(code, onOpen, onFail) {
     const m = new Mqtt(BROKERS[idx++], (t, payload) => {
       let d; try { d = JSON.parse(payload); } catch (e) { return; }
       if (!d || stopped && !conn) return;
+      if (boundHk && d.hk && d.hk !== boundHk) return; // a different (stale) host answered too
       if (d.x) { if (conn) conn.drop(); return; }
       if (!d.m || typeof d.m !== 'object') return;
       if (d.m.t === '_ack') {
         if (acked) return;
-        acked = true; clearTimeout(ackT);
+        acked = true; clearTimeout(ackT); boundHk = d.hk || null;
         conn = new RelayConn(m, outT, id);
         conn.onClosed = () => setTimeout(() => m.close(), 150);
         onOpen(conn);
@@ -1656,14 +1914,18 @@ function relayConnect(code, onOpen, onFail) {
 }
 
 let lobbySeen = new Set();
-function renderLobby(players, grid, isHost, code, timer, undo, teams) {
-  G.lobby = players;
+function renderLobby(players, grid, isHost, code, timer, undo, teams, hostPid) {
+  G.lobby = players; G.hostPid = hostPid;
   const mine = myPid();
   $('#l-code').textContent = code;
   $('#l-link').value = roomLink(code);
   $('#l-count').textContent = `${players.length}/8`;
-  $('#l-players').innerHTML = players.map((p, k) =>
-    `<li class="${lobbySeen.has(p.pid) ? '' : 'new'}">${p.pid === mine ? `<button class="look mine" data-mylook style="--c:${COLORS[p.c]}" aria-label="Change your colour and avatar" title="Change colour & avatar">${p.av}</button>` : `<span class="look" style="--c:${COLORS[p.c]}">${p.av}</span>`}<span class="nm">${esc(p.name)}</span>${teams ? `<span class="team">${'AB'[k & 1]}</span>` : ''}${k === 0 ? '<span class="tagx">HOST</span>' : ''}${p.pid === myPid() ? '<span class="tagx">YOU</span>' : ''}${isHost && k > 0 ? `<button class="kick" data-kick="${esc(p.pid)}" aria-label="Remove player">✕</button>` : ''}</li>`).join('') +
+  $('#l-players').innerHTML = players.map(p => {
+    const me = p.pid === mine, isH = p.pid === hostPid;
+    const look = me ? `<button class="look mine" data-mylook style="--c:${COLORS[p.c]}" aria-label="Change your colour and avatar" title="Change colour & avatar">${p.av}</button>` : `<span class="look" style="--c:${COLORS[p.c]}">${p.av}</span>`;
+    const team = !teams ? '' : (me || isHost) ? `<button class="team" data-team="${esc(p.pid)}" title="Tap to switch team">${'AB'[p.t & 1]}</button>` : `<span class="team">${'AB'[p.t & 1]}</span>`;
+    return `<li class="${lobbySeen.has(p.pid) ? '' : 'new'}">${look}<span class="nm">${esc(p.name)}</span>${team}${p.ready && !isH ? '<span class="ready">✓ READY</span>' : ''}${isH ? '<span class="tagx">HOST</span>' : ''}${me ? '<span class="tagx">YOU</span>' : ''}${isHost && !me ? `<button class="kick" data-kick="${esc(p.pid)}" aria-label="Remove player">✕</button>` : ''}</li>`;
+  }).join('') +
     (players.length < 2 ? '<li class="muted" style="justify-content:center">Waiting for friends to join…</li>' : '');
   lobbySeen = new Set(players.map(p => p.pid));
   const seg = $('#l-grid');
@@ -1678,10 +1940,16 @@ function renderLobby(players, grid, isHost, code, timer, undo, teams) {
   const tm = $('#l-teams');
   tm.innerHTML = teamSegHTML(teams);
   tm.classList.toggle('ro', !isHost);
-  const st = $('#b-start'), badTeams = teams && !teamsOk(players.length);
+  const tl = players.map(p => p.t & 1), badTeams = teams && !teamsValid(tl);
+  const others = players.filter(p => p.pid !== hostPid), readyN = others.filter(p => p.ready).length;
+  const st = $('#b-start');
   st.classList.toggle('hidden', !isHost);
   st.disabled = players.length < 2 || badTeams;
-  st.textContent = players.length < 2 ? 'Need at least 2 players' : badTeams ? 'Teams need 4, 6 or 8 players' : `Start game · ${players.length} players${teams ? ' · 2 teams' : ''}`;
+  st.textContent = players.length < 2 ? 'Need at least 2 players' : badTeams ? 'Put at least one player in each team'
+    : `Start game · ${teams ? `${tl.filter(t => !t).length} vs ${tl.filter(t => t).length}` : players.length + ' players'}${others.length ? ` · ${readyN}/${others.length} ready` : ''}`;
+  const meP = players.find(p => p.pid === mine), rb = $('#b-ready');
+  rb.classList.toggle('hidden', isHost || !meP);
+  if (meP) { G.myReady = !!meP.ready; rb.textContent = meP.ready ? '✓ Ready — tap to cancel' : "✋ I'm ready"; rb.classList.toggle('primary', !meP.ready); }
   $('#b-look').classList.toggle('hidden', !players.some(p => p.pid === mine));
   if (pick && pick.online) {
     const me = players.find(p => p.pid === mine);
@@ -1691,7 +1959,7 @@ function renderLobby(players, grid, isHost, code, timer, undo, teams) {
   }
   const inList = players.some(p => p.pid === myPid());
   $('#l-wait').classList.toggle('hidden', isHost);
-  $('#l-wait').textContent = inList ? 'Waiting for the host to start…' : "Lobby is full — you'll watch the next game.";
+  $('#l-wait').textContent = inList ? 'The game starts when everyone is ready (or the host starts it).' : "Lobby is full — you'll watch the next game.";
 }
 function openLobby() { ov('win', false); clearConfetti(); busyOff(); show('lobby'); }
 $('#l-teams').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.teams = b.dataset.tm === '1'; Host.pushLobby(); } };
@@ -1714,8 +1982,17 @@ $('#l-timer').onclick = e => { const b = e.target.closest('button'); if (b && G.
 $('#l-grid').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.grid = b.dataset.g; Host.pushLobby(); } };
 $('#l-players').onclick = e => {
   if (e.target.closest('[data-mylook]')) { openMyLook(); return; }
+  const tb = e.target.closest('[data-team]');
+  if (tb) {
+    const pid = tb.dataset.team, p = (G.lobby || []).find(x => x.pid === pid); if (!p) return;
+    const nt = p.t ? 0 : 1;
+    if (G.mode === 'host') Host.setTeam(Host.cidOf(pid), nt);
+    else if (pid === myPid()) Client.send({ t: 'team', team: nt });
+    return;
+  }
   const b = e.target.closest('[data-kick]'); if (b && G.mode === 'host') Host.kick(b.dataset.kick);
 };
+$('#b-ready').onclick = () => { if (G.mode !== 'client') return; G.myReady = !G.myReady; Client.send({ t: 'ready', on: G.myReady }); };
 $('#b-start').onclick = () => { if (G.mode === 'host') Host.start(); };
 $('#b-copy').onclick = async () => { toast(await copyText($('#l-link').value) ? 'Invite link copied!' : 'Copy failed — select the link manually'); };
 $('#l-code').onclick = async () => { toast(await copyText($('#l-code').textContent) ? 'Room code copied!' : 'Copy failed'); };
@@ -1725,13 +2002,20 @@ $('#b-share').onclick = async () => {
   toast(await copyText(url) ? 'Invite link copied!' : 'Copy failed');
 };
 $('#lobby-back').onclick = async () => {
-  if (G.mode === 'host') { if (Host.order.length < 2 || await dialog('Close the room?', 'Everyone in the lobby will be disconnected.', 'Close room', 'Cancel', true)) Host.close(); }
-  else Client.leave();
+  if (G.mode !== 'host') { Client.leave(); return; }
+  const next = Host.successorCid();
+  if (!next) { Host.close(); return; }
+  const k = await menu('Leave the room?', 'Pass the room to the next player, or close it for everyone.', [
+    { k: 'handover', label: `🚪 Leave (${Host.nameOf(next)} becomes host)`, cls: 'primary' },
+    { k: 'close', label: '✖ Close room for everyone', cls: 'danger' }
+  ]);
+  if (k === 'handover') Host.handover(); else if (k === 'close') Host.close();
 };
 
 const Host = {
   peer: null, code: '', conns: new Map(), order: [], phase: 'lobby', grid: 'm', seats: [], presence: [], state: null,
   skips: [], banned: new Set(), looks: new Map(), teams: false,
+  names: new Map(), bannedPids: new Set(), teamOf: new Map(), ready: new Set(), votes: new Set(), vids: new Map(), vT: new Map(), epoch: 0,
   rmTimers: new Map(), emT: new Map(), chT: new Map(), pids: new Map(), chatLog: [], prev: null, allowUndo: true, hb: 0, opened: false,
   pidOf(cid) { let p = this.pids.get(cid); if (!p) { p = rid(8); this.pids.set(cid, p); } return p; },
   cidOf(pid) { for (const [c, p] of this.pids) if (p === pid) return c; return null; },
@@ -1741,6 +2025,7 @@ const Host = {
     try { await loadPeer(); } catch (e) { /* direct links unavailable; the relay still works */ }
     if (busyCancel !== cancel) return;
     this.reset();
+    this.epoch = 0;
     G.mode = 'host'; G.mySeat = 0; G.presence = null;
     this.grid = store.get('cr_grid', 'm');
     this.timer = store.get('cr_timer', 30);
@@ -1766,36 +2051,168 @@ const Host = {
     const attempt = () => {
       if (G.mode !== 'host') return;
       this.code = rid(5, CODE_ABC);
-      RelayHost.start(this.code, up);
-      if (!window.Peer) return;
-      let peer;
-      try { peer = new Peer(PEER_PREFIX + this.code, { debug: 0, config: ICE }); } catch (e) { return; }
-      this.peer = peer;
-      peer.on('open', () => { if (peer === this.peer) up(); });
-      peer.on('connection', c => { if (peer === this.peer) this.onConn(c); });
-      peer.on('disconnected', () => {
-        if (peer !== this.peer || peer.destroyed) return;
-        this.netChanged();
-        setTimeout(() => { if (peer === this.peer && !peer.destroyed && peer.disconnected) { try { peer.reconnect(); } catch (e) {} } }, 1500);
-      });
-      peer.on('error', err => {
-        if (peer !== this.peer) return;
-        const t = err && err.type;
-        // someone else holds this code on the direct server: pick another before the room is shown
-        if (t === 'unavailable-id' && !this.opened && tries++ < 5) { try { peer.destroy(); } catch (e) {} attempt(); return; }
-        if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed') {
-          this.netChanged();
-          setTimeout(() => { if (peer === this.peer && !peer.destroyed && peer.disconnected) { try { peer.reconnect(); } catch (e) {} } }, 3000);
-        }
-      });
+      // someone else holds this code on the direct server: pick another before the room is shown
+      this.listen(this.code, up, () => { if (!this.opened && tries++ < 5) { attempt(); return true; } return false; });
     };
     attempt();
     setTimeout(() => { if (G.mode === 'host' && !this.opened) { busyOff(); toast(netMsg('timeout')); this.close(); } }, 20000);
   },
   netChanged() { if (G.mode === 'host') setNet(RelayHost.up() || !!(this.peer && this.peer.open && !this.peer.disconnected)); },
+  hostKey() { return this.epoch + ':' + this.pidOf(CID); },
+  // the room is reachable through the relay and (when available) a direct PeerJS id named after the code
+  listen(code, onUp, onClash) {
+    RelayHost.start(code, onUp, this.hostKey());
+    this.startPeer(code, onUp, onClash);
+  },
+  startPeer(code, onUp, onClash) {
+    if (!window.Peer || G.mode !== 'host' || this.code !== code) return;
+    let peer;
+    try { peer = new Peer(PEER_PREFIX + code, { debug: 0, config: ICE }); } catch (e) { return; }
+    this.peer = peer;
+    peer.on('open', () => { if (peer === this.peer) onUp(); });
+    peer.on('connection', c => { if (peer === this.peer) this.onConn(c); });
+    peer.on('disconnected', () => {
+      if (peer !== this.peer || peer.destroyed) return;
+      this.netChanged();
+      setTimeout(() => { if (peer === this.peer && !peer.destroyed && peer.disconnected) { try { peer.reconnect(); } catch (e) {} } }, 1500);
+    });
+    peer.on('error', err => {
+      if (peer !== this.peer) return;
+      const t = err && err.type;
+      if (t === 'unavailable-id') {
+        try { peer.destroy(); } catch (e) {}
+        this.peer = null;
+        if (onClash && onClash()) return;
+        // after a handover the previous host's id can stay registered for a while; the relay works meanwhile
+        clearTimeout(this.peerRetry);
+        this.peerRetry = setTimeout(() => this.startPeer(code, onUp, null), 10000);
+        return;
+      }
+      if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed') {
+        this.netChanged();
+        setTimeout(() => { if (peer === this.peer && !peer.destroyed && peer.disconnected) { try { peer.reconnect(); } catch (e) {} } }, 3000);
+      }
+    });
+  },
+  nameOf(cid) { return cid === CID ? myName() : ((this.conns.get(cid) || {}).name || this.names.get(cid) || 'Player'); },
+  // everything a player needs to take over as host, kept up to date on every client
+  metaObj() {
+    const P = c => this.pidOf(c), names = {}, looks = {}, teamOf = {};
+    for (const c of new Set([...this.order, ...this.seats])) {
+      const p = P(c); names[p] = this.nameOf(c);
+      const l = this.looks.get(c); if (l) looks[p] = { c: l.c, av: l.av };
+      if (this.teamOf.has(c)) teamOf[p] = this.teamOf.get(c);
+    }
+    return {
+      epoch: this.epoch, host: P(CID), phase: this.phase, order: this.order.map(P), seats: this.seats.map(P), names, looks, teamOf,
+      settings: { grid: this.grid, timer: this.timer, undo: this.allowUndo, teams: this.teams },
+      banned: [...this.bannedPids], skips: this.skips.slice(), presence: this.presence.slice()
+    };
+  },
+  // sent at most every 250ms; a steady stream of changes can't postpone it
+  pushMeta() {
+    if (this.metaT) return;
+    this.metaT = setTimeout(() => { this.metaT = 0; if (G.mode === 'host' && this.opened) this.broadcast({ t: 'meta', meta: this.metaObj() }); }, 250);
+  },
+  successorCid() {
+    const list = this.phase === 'game' ? [...this.seats, ...this.order] : this.order;
+    for (const c of list) {
+      if (c === CID || !this.conns.has(c)) continue;
+      return c;
+    }
+    return null;
+  },
+  // leave but keep the room going: the next player becomes host (silent = the page is closing)
+  handover(silent) {
+    const to = this.successorCid();
+    if (!to) { if (silent) this.broadcast({ t: 'bye', r: 'closed' }); else this.close(); return; }
+    this.broadcast({ t: 'handover', to: this.pidOf(to), meta: this.metaObj() });
+    if (silent) return;
+    const name = this.nameOf(to), p = this.peer;
+    this.reset();
+    setTimeout(() => { try { if (p) p.destroy(); } catch (e) {} }, 300);
+    goHome();
+    toast(`👑 ${name} is hosting the room now`, 2500);
+  },
+  // a player takes over the room from the last snapshot the old host sent
+  adopt(code, meta, myPid, st, leftPid) {
+    this.reset();
+    G.mode = 'host';
+    this.code = code; this.epoch = (meta.epoch | 0) + 1;
+    const old = meta.host, game = meta.phase === 'game' && validState(st);
+    this.pids.set(CID, myPid);
+    const toCid = p => p === myPid ? CID : '~' + p;
+    const all = [...new Set([...(meta.order || []), ...(meta.seats || [])])].filter(p => typeof p === 'string' && p);
+    for (const p of all) if (p !== myPid) this.pids.set('~' + p, p);
+    for (const p of all) {
+      const c = toCid(p), l = meta.looks && meta.looks[p];
+      if (meta.names && meta.names[p]) this.names.set(c, cleanName(meta.names[p]) || 'Player');
+      if (l && validC(l.c)) this.looks.set(c, { c: l.c, av: validAv(l.av) ? l.av : AVATARS[0] });
+      if (meta.teamOf && (meta.teamOf[p] === 0 || meta.teamOf[p] === 1)) this.teamOf.set(c, meta.teamOf[p]);
+    }
+    const set = meta.settings || {};
+    this.grid = gridById(set.grid).id; this.timer = TIMERS.includes(set.timer) ? set.timer : 30;
+    this.allowUndo = set.undo !== false; this.teams = set.teams === true;
+    this.bannedPids = new Set(Array.isArray(meta.banned) ? meta.banned : []);
+    this.skips = Array.isArray(meta.skips) ? meta.skips.slice() : [];
+    this.chatLog = Chat.list.slice(-50);
+    this.order = (meta.order || []).filter(p => p !== old).map(toCid);
+    if (!this.order.includes(CID)) this.order.unshift(CID);
+    if (Vc.on && Vc.peer && Vc.peer.id) this.vids.set(CID, Vc.peer.id);
+    this.opened = true;
+    this.hb = setInterval(() => this.beat(), 3000);
+    if (game) {
+      this.phase = 'game';
+      this.seats = (meta.seats || []).map(toCid);
+      this.state = cloneState(st); this.state.ud = -1; this.prev = null;
+      this.presence = this.seats.map(c => c === CID);
+      const k = leftPid ? this.seats.indexOf('~' + leftPid) : -1;
+      if (k >= 0 && !this.state.pl[k].out && this.state.winner < 0) this.state = removePlayer(this.state, k); // the old host left on purpose
+      // everyone else gets the usual grace period to reconnect before their seat is given up
+      this.seats.forEach((c, i) => { if (c !== CID && !this.state.pl[i].out) this.rmTimers.set(c, setTimeout(() => this.dropSeat(c), DROP_MS)); });
+      G.mySeat = this.seats.indexOf(CID); G.presence = this.presence;
+    } else {
+      this.phase = 'lobby';
+      this.order.forEach(c => { if (c !== CID) this.rmTimers.set(c, setTimeout(() => this.dropLobby(c), 30000)); });
+    }
+    this.listen(code, () => this.netChanged(), null);
+    if (game) { beginGame(this.state); this.arm(0); }
+    else { openLobby(); this.pushLobby(); }
+    toast('👑 You are the host now', 3000);
+  },
+  // a reconnecting player claims their old seat by their public id
+  rebind(ph, cid) {
+    const pid = this.pids.get(ph);
+    this.pids.delete(ph); this.pids.set(cid, pid);
+    const sw = a => a.map(c => c === ph ? cid : c);
+    this.order = sw(this.order); this.seats = sw(this.seats);
+    for (const mp of [this.looks, this.names, this.teamOf]) if (mp.has(ph)) { mp.set(cid, mp.get(ph)); mp.delete(ph); }
+    clearTimeout(this.rmTimers.get(ph)); this.rmTimers.delete(ph);
+  },
+  dropLobby(c) {
+    this.rmTimers.delete(c);
+    if (this.phase !== 'lobby' || this.conns.has(c) || c === CID) return;
+    const k = this.order.indexOf(c);
+    if (k >= 0) { this.order.splice(k, 1); this.pushLobby(); }
+  },
+  seenHost(bh) {
+    if (G.mode !== 'host' || !bh) return;
+    const e = bh.epoch | 0, hk = String(bh.hk || '');
+    if (e > this.epoch || (e === this.epoch && hk > this.hostKey())) this.demote();
+  },
+  // another player took over while we were cut off: rejoin as a normal player
+  demote() {
+    const code = this.code, pid = this.pidOf(CID), p = this.peer;
+    this.reset();
+    try { if (p) p.destroy(); } catch (e) {}
+    toast('👑 Another player is hosting now — you rejoined as a player', 3500);
+    Client.resume(code, pid);
+  },
   reset() {
     clearInterval(this.hb); this.hb = 0;
     clearTimeout(this.tt); this.deadline = 0;
+    clearTimeout(this.peerRetry); clearTimeout(this.metaT); this.metaT = 0; clearTimeout(this.autoT); clearTimeout(this.voteT); this.autoT = 0; this.voteT = 0;
+    this.names = new Map(); this.bannedPids = new Set(); this.teamOf = new Map(); this.ready = new Set(); this.votes = new Set(); this.vids = new Map(); this.vT = new Map();
     this.rmTimers.forEach(t => clearTimeout(t)); this.rmTimers.clear();
     this.skips = []; this.banned = new Set(); this.looks = new Map();
     this.conns.clear(); this.emT.clear(); this.chT.clear(); this.pids.clear(); this.chatLog = []; this.prev = null;
@@ -1822,30 +2239,50 @@ const Host = {
     let cid = null;
     conn.on('data', d => {
       if (!d || typeof d !== 'object') return;
-      if (d.t === 'hello') { const c = String(d.cid || '').slice(0, 40); if (!c) return; cid = c; this.hello(conn, cid, d.name, d.look); return; }
+      if (d.t === 'hello') {
+        const c = String(d.cid || '').slice(0, 40); if (!c || c[0] === '~') return;
+        cid = c; this.hello(conn, cid, d.name, d.look, typeof d.pid === 'string' ? d.pid.slice(0, 20) : ''); return;
+      }
       if (!cid) return;
       const m = this.conns.get(cid);
       if (!m || m.conn !== conn) return;
       m.last = Date.now();
-      if (d.t === 'move') this.move(this.phase === 'game' ? this.seats.indexOf(cid) : -1, d.i | 0, cid, d.seq);
-      else if (d.t === 'emoji') this.emoji(cid, d.e);
-      else if (d.t === 'chat') this.chat(cid, d.text);
-      else if (d.t === 'undo') { if (!this.undo(this.phase === 'game' ? this.seats.indexOf(cid) : -1)) send(conn, { t: 'nack' }); }
-      else if (d.t === 'leave') this.leaveMsg(cid);
-      else if (d.t === 'resign') this.resign(cid);
-      else if (d.t === 'look') { if (this.phase === 'lobby') this.setLook(cid, Number(d.c), d.av); }
+      this.handle(cid, d, conn);
     });
     conn.on('close', () => { if (cid) this.lost(cid, conn); });
     conn.on('error', () => { if (cid) this.lost(cid, conn); });
   },
-  hello(conn, cid, name, look) {
+  // messages from a player (or from the host itself, with conn = null)
+  handle(cid, d, conn) {
+    const seat = this.phase === 'game' ? this.seats.indexOf(cid) : -1;
+    switch (d.t) {
+      case 'move': this.move(seat, d.i | 0, cid, d.seq); break;
+      case 'emoji': this.emoji(cid, d.e); break;
+      case 'chat': this.chat(cid, d.text, d.v); break;
+      case 'undo': if (!this.undo(seat) && conn) send(conn, { t: 'nack' }); break;
+      case 'leave': this.leaveMsg(cid); break;
+      case 'resign': this.resign(cid); break;
+      case 'look': if (this.phase === 'lobby') this.setLook(cid, Number(d.c), d.av); break;
+      case 'team': this.setTeam(cid, d.team); break;
+      case 'ready': this.setReady(cid, !!d.on); break;
+      case 'vote': this.vote(cid, !!d.on); break;
+      case 'vjoin': if (typeof d.id === 'string' && d.id.length < 80) { this.vids.set(cid, d.id); this.pushVoice(); } break;
+      case 'vleave': if (this.vids.delete(cid)) this.pushVoice(); setTalking(this.pidOf(cid), false); break;
+      case 'talk': if (this.vids.has(cid)) { const pid = this.pidOf(cid); this.broadcast({ t: 'talk', pid, on: !!d.on }); setTalking(pid, !!d.on); } break;
+    }
+  },
+  voiceIds() { const o = {}; for (const [c, id] of this.vids) o[this.pidOf(c)] = id; return o; },
+  pushVoice() { const ids = this.voiceIds(); this.broadcast({ t: 'vlist', ids }); Vc.sync(ids); },
+  hello(conn, cid, name, look, claim) {
     name = cleanName(name) || 'Player';
+    if (claim && cid !== CID && this.pids.get('~' + claim) === claim) this.rebind('~' + claim, cid);
     if (!this.looks.has(cid)) {
       const pref = look && typeof look === 'object' ? look : {};
       this.looks.set(cid, { c: validC(pref.c) ? pref.c : -1, av: validAv(pref.av) ? pref.av : AVATARS[Math.random() * AVATARS.length | 0] });
     }
     if (cid === CID) { send(conn, { t: 'bye', r: 'dup' }); return; }
-    if (this.banned.has(cid)) { send(conn, { t: 'bye', r: 'kicked' }); setTimeout(() => { try { conn.close(); } catch (e) {} }, 600); return; }
+    if (this.banned.has(cid) || this.bannedPids.has(this.pids.get(cid))) { send(conn, { t: 'bye', r: 'kicked' }); setTimeout(() => { try { conn.close(); } catch (e) {} }, 600); return; }
+    this.names.set(cid, name);
     const ex = this.conns.get(cid);
     if (this.phase === 'lobby' && !ex && !this.order.includes(cid) && this.order.length >= 8) {
       send(conn, { t: 'bye', r: 'full' }); setTimeout(() => { try { conn.close(); } catch (e) {} }, 600); return;
@@ -1854,6 +2291,7 @@ const Host = {
     this.conns.set(cid, { conn, name, last: Date.now() });
     send(conn, { t: 'welcome', code: this.code, pid: this.pidOf(cid) });
     send(conn, { t: 'chatlog', list: this.chatLog });
+    if (this.vids.size) send(conn, { t: 'vlist', ids: this.voiceIds() });
     if (this.phase === 'lobby') {
       if (!this.order.includes(cid)) { this.order.push(cid); if (!ex) toast(`${name} joined`); }
       this.pushLobby();
@@ -1872,10 +2310,13 @@ const Host = {
     const m = this.conns.get(cid);
     if (!m || m.conn !== conn) return;
     this.conns.delete(cid);
+    this.ready.delete(cid); this.votes.delete(cid);
+    if (this.vids.delete(cid)) { this.pushVoice(); setTalking(this.pidOf(cid), false); }
     if (this.phase === 'lobby') {
       const k = this.order.indexOf(cid);
-      if (k > 0) { this.order.splice(k, 1); this.pushLobby(); toast(`${m.name} left`); }
+      if (k >= 0 && cid !== CID) { this.order.splice(k, 1); this.pushLobby(); toast(`${m.name} left`); }
     } else {
+      if (this.state && this.state.winner >= 0) this.pushVotes();
       const seat = this.seats.indexOf(cid);
       if (seat >= 0 && this.state && !this.state.pl[seat].out && this.state.winner < 0) {
         this.presence[seat] = false; this.pushPresence();
@@ -1889,18 +2330,21 @@ const Host = {
     const m = this.conns.get(cid); if (!m) return;
     this.conns.delete(cid);
     const c = m.conn; setTimeout(() => { try { c.close(); } catch (e) {} }, 300);
+    this.ready.delete(cid); this.votes.delete(cid);
+    if (this.vids.delete(cid)) this.pushVoice();
     if (this.phase === 'lobby') {
       const k = this.order.indexOf(cid);
-      if (k > 0) { this.order.splice(k, 1); this.pushLobby(); toast(`${m.name} left`); }
+      if (k >= 0 && cid !== CID) { this.order.splice(k, 1); this.pushLobby(); toast(`${m.name} left`); }
     } else this.dropSeat(cid);
   },
   kick(pid) {
     const cid = this.cidOf(pid); if (!cid || cid === CID) return;
-    this.banned.add(cid);
+    this.banned.add(cid); this.bannedPids.add(pid); this.ready.delete(cid);
     const m = this.conns.get(cid);
     if (m) { send(m.conn, { t: 'bye', r: 'kicked' }); this.conns.delete(cid); const c = m.conn; setTimeout(() => { try { c.close(); } catch (e) {} }, 400); }
+    if (this.vids.delete(cid)) this.pushVoice();
     const k = this.order.indexOf(cid);
-    if (k > 0) { this.order.splice(k, 1); this.pushLobby(); }
+    if (k >= 0) { this.order.splice(k, 1); this.pushLobby(); }
   },
   dropSeat(cid) {
     clearTimeout(this.rmTimers.get(cid)); this.rmTimers.delete(cid);
@@ -1920,6 +2364,7 @@ const Host = {
     if (cid !== CID && !this.conns.has(cid)) this.presence[seat] = false;
     this.broadcast({ t: 'rm', p: seat, r: why, state: this.state, presence: this.presence });
     G.presence = this.presence;
+    this.pushMeta();
     toast(rmText(why, this.state.pl[seat].name, seat === G.mySeat), 3200);
     pushEvent({ k: 'sync', final: this.state });
   },
@@ -1927,13 +2372,14 @@ const Host = {
   kickSeat(seat) {
     const cid = this.seats[seat];
     if (!cid || cid === CID || !this.state) return;
-    this.banned.add(cid);
+    this.banned.add(cid); this.bannedPids.add(this.pidOf(cid));
+    if (this.vids.delete(cid)) this.pushVoice();
     const m = this.conns.get(cid);
     if (m) { send(m.conn, { t: 'bye', r: 'kicked' }); this.conns.delete(cid); const c = m.conn; setTimeout(() => { try { c.close(); } catch (e) {} }, 400); }
     if (!this.state.pl[seat].out && this.state.winner < 0) this.removeSeat(seat, 'kicked');
     else { this.presence[seat] = false; this.pushPresence(); toast(rmText('kicked', this.state.pl[seat].name, false)); }
   },
-  pushPresence() { G.presence = this.presence; this.broadcast({ t: 'presence', presence: this.presence }); if (screen === 'game') updateHUD(); },
+  pushPresence() { G.presence = this.presence; this.broadcast({ t: 'presence', presence: this.presence }); if (screen === 'game') updateHUD(); this.pushMeta(); },
   // earlier joiners keep their colour; anyone clashing or without one gets the first free colour
   fixLooks() {
     const used = new Set();
@@ -1950,17 +2396,52 @@ const Host = {
     if (validC(c) && !this.order.some(o => o !== cid && (this.looks.get(o) || {}).c === c)) l.c = c;
     if (this.phase === 'lobby') this.pushLobby();
   },
-  lobbyPlayers() {
-    this.fixLooks();
-    return this.order.map(cid => { const l = this.looks.get(cid); return { pid: this.pidOf(cid), name: cid === CID ? myName() : ((this.conns.get(cid) || {}).name || 'Player'), c: l.c, av: l.av }; });
+  // newcomers join the smaller team; players can switch in the lobby
+  fixTeams() {
+    let a = 0, b = 0;
+    for (const c of this.order) { const t = this.teamOf.get(c); if (t === 0) a++; else if (t === 1) b++; }
+    for (const c of this.order) if (!this.teamOf.has(c)) { const t = a <= b ? 0 : 1; this.teamOf.set(c, t); if (t) b++; else a++; }
   },
-  lobbyMsg() { return { t: 'lobby', players: this.lobbyPlayers(), grid: this.grid, code: this.code, timer: this.timer, undo: this.allowUndo, teams: this.teams }; },
+  setTeam(cid, t) { if (this.phase !== 'lobby' || !cid || !this.order.includes(cid)) return; this.teamOf.set(cid, t ? 1 : 0); this.pushLobby(); },
+  setReady(cid, on) { if (this.phase !== 'lobby' || cid === CID || !this.order.includes(cid)) return; if (on) this.ready.add(cid); else this.ready.delete(cid); this.pushLobby(); },
+  // when every other player in the lobby is ready, the game starts by itself
+  checkAuto() {
+    const others = this.order.filter(c => c !== CID);
+    const ok = this.phase === 'lobby' && others.length > 0 && others.every(c => this.ready.has(c) && this.conns.has(c)) &&
+      (!this.teams || teamsValid(this.order.map(c => this.teamOf.get(c) | 0)));
+    if (!ok) { if (this.autoT) { clearTimeout(this.autoT); this.autoT = 0; } return; }
+    if (this.autoT) return;
+    const note = '✅ Everyone is ready — starting…';
+    this.broadcast({ t: 'note', text: note }); toast(note, 2000);
+    this.autoT = setTimeout(() => { this.autoT = 0; if (this.phase === 'lobby' && this.order.filter(c => c !== CID).every(c => this.ready.has(c))) this.start(); }, 2000);
+  },
+  // everyone still in the room votes, including players who exited the game to watch
+  voters() { return this.seats.filter(c => c !== CID && this.conns.has(c)); },
+  vote(cid, on) {
+    if (this.phase !== 'game' || !this.state || this.state.winner < 0) return;
+    if (on) this.votes.add(cid); else this.votes.delete(cid);
+    this.pushVotes();
+  },
+  // rematch starts by itself once every other player has voted
+  pushVotes() {
+    if (this.phase !== 'game' || !this.state || this.state.winner < 0) return;
+    const vs = this.voters(), n = vs.filter(c => this.votes.has(c)).length, d = { t: 'votes', n, of: vs.length };
+    this.broadcast(d); updVotes(d);
+    if (vs.length && n === vs.length && !this.voteT) this.voteT = setTimeout(() => { this.voteT = 0; if (this.phase === 'game' && this.state && this.state.winner >= 0) this.rematch(); }, 1200);
+  },
+  lobbyPlayers() {
+    this.fixLooks(); this.fixTeams();
+    return this.order.map(cid => { const l = this.looks.get(cid); return { pid: this.pidOf(cid), name: this.nameOf(cid), c: l.c, av: l.av, t: this.teamOf.get(cid) | 0, ready: this.ready.has(cid) }; });
+  },
+  lobbyMsg() { return { t: 'lobby', players: this.lobbyPlayers(), grid: this.grid, code: this.code, timer: this.timer, undo: this.allowUndo, teams: this.teams, host: this.pidOf(CID) }; },
   pushLobby() {
     if (this.phase !== 'lobby') return;
     const msg = this.lobbyMsg();
     this.broadcast(msg);
-    renderLobby(msg.players, this.grid, true, this.code, this.timer, this.allowUndo, this.teams);
+    renderLobby(msg.players, this.grid, true, this.code, this.timer, this.allowUndo, this.teams, msg.host);
     store.set('cr_grid', this.grid); store.set('cr_timer', this.timer); store.set('cr_undo', this.allowUndo); store.set('cr_teams', this.teams);
+    this.pushMeta();
+    this.checkAuto();
   },
   sendSync(cid) {
     const m = this.conns.get(cid); if (!m) return;
@@ -1970,16 +2451,18 @@ const Host = {
   pubSeats() { return this.seats.map(c => this.pidOf(c)); },
   start() {
     if (this.phase !== 'lobby' || this.order.length < 2) return;
-    if (this.teams && !teamsOk(this.order.length)) { toast('Team mode needs 4, 6 or 8 players'); return; }
-    const g = gridById(this.grid);
-    this.seats = this.order.slice(0, 8);
-    this.presence = this.seats.map(() => true);
-    const pls = this.lobbyPlayers();
-    this.state = newGame(g.r, g.c, pls.map((p, k) => ({ name: p.name, c: p.c, av: p.av, t: k & 1 })), this.timer, this.allowUndo, this.teams);
-    this.phase = 'game'; this.prev = null; this.skips = [];
+    this.fixLooks(); this.fixTeams();
+    if (this.teams && !teamsValid(this.order.map(c => this.teamOf.get(c) | 0))) { toast('Put at least one player in each team'); return; }
+    clearTimeout(this.autoT); this.autoT = 0;
+    const g = gridById(this.grid), list = this.order.slice(0, 8);
+    this.seats = this.teams ? interleaveTeams(list, c => this.teamOf.get(c) | 0) : list;
+    this.presence = this.seats.map(c => c === CID || this.conns.has(c));
+    this.state = newGame(g.r, g.c, this.seats.map(c => { const l = this.looks.get(c); return { name: this.nameOf(c), c: l.c, av: l.av, t: this.teamOf.get(c) | 0 }; }), this.timer, this.allowUndo, this.teams);
+    this.phase = 'game'; this.prev = null; this.skips = []; this.ready.clear(); this.votes.clear();
     this.broadcast({ t: 'start', state: this.state, seats: this.pubSeats(), presence: this.presence });
-    G.mySeat = 0; G.presence = this.presence;
+    G.mySeat = this.seats.indexOf(CID); G.presence = this.presence;
     this.arm(0);
+    this.pushMeta();
     beginGame(this.state);
   },
   move(seat, i, cid, seq) {
@@ -2001,6 +2484,8 @@ const Host = {
     if (auto) toast(skipText(s.pl[s.turn].name, sk || 0, s.turn === G.mySeat), 3000);
     pushEvent({ k: 'move', pre: s, i, final: r.s, waves: r.waves });
     this.arm(animEstimate(r.waves));
+    this.pushMeta();
+    if (r.s.winner >= 0) { this.votes.clear(); setTimeout(() => this.pushVotes(), 300); }
   },
   // host-side turn clock: animation time + turn length + a little grace for network latency
   arm(animMs, until) {
@@ -2030,15 +2515,22 @@ const Host = {
     this.arm(0);
     return true;
   },
-  chat(cid, text) {
-    const m = cleanMsg({ text, name: 'x', pid: 'x' });
+  chat(cid, text, v) {
+    const isV = Number.isInteger(v) && v >= 0 && v < VOICE.length;
+    const m = cleanMsg({ text, name: 'x', pid: 'x', v: isV ? v : null });
     if (!m) return;
     const now = Date.now();
-    // burst of 5 messages, refilling one every 700ms
-    const b = this.chT.get(cid) || { n: 5, t: now };
-    b.n = Math.min(5, b.n + (now - b.t) / 700); b.t = now;
-    if (b.n < 1) return;
-    b.n--; this.chT.set(cid, b);
+    if (isV) {
+      // spoken lines: one every few seconds per player
+      if (now - (this.vT.get(cid) || 0) < 2500) return;
+      this.vT.set(cid, now);
+    } else {
+      // burst of 5 messages, refilling one every 700ms
+      const b = this.chT.get(cid) || { n: 5, t: now };
+      b.n = Math.min(5, b.n + (now - b.t) / 700); b.t = now;
+      if (b.n < 1) return;
+      b.n--; this.chT.set(cid, b);
+    }
     const seat = this.phase === 'game' ? this.seats.indexOf(cid) : -1;
     if (seat >= 0) { const p = this.state.pl[seat]; m.name = p.name; m.ci = p.c; m.av = p.av || ''; }
     else {
@@ -2068,6 +2560,7 @@ const Host = {
     const on = [...this.conns.keys()];
     this.order = [CID, ...this.seats.filter(c => c !== CID && on.includes(c)), ...on.filter(c => !this.seats.includes(c))].slice(0, 8);
     this.phase = 'lobby'; this.state = null; this.seats = []; this.presence = []; this.prev = null;
+    this.ready.clear(); this.votes.clear(); clearTimeout(this.voteT); this.voteT = 0;
     G.presence = null;
     openLobby();
     this.pushLobby();
@@ -2077,7 +2570,7 @@ const Host = {
 
 const Client = {
   peer: null, conn: null, code: '', hostId: '', last: 0, hb: 0, joined: false, retry: 0, closing: true, token: 0, connTimer: 0,
-  state: null, seats: [], phase: 'lobby', pid: '',
+  state: null, seats: [], phase: 'lobby', pid: '', meta: null, lostAt: 0, handoverTo: null,
   async join(code) {
     code = normCode(code);
     $('#join-err').textContent = '';
@@ -2091,13 +2584,49 @@ const Client = {
     this.code = code; this.hostId = PEER_PREFIX + code;
     if (!this.joined) { this.pid = ''; chatReset([]); }
     this.closing = false; this.joined = false; this.retry = 0; this.state = null; this.phase = 'lobby';
+    this.meta = null; this.lostAt = 0; this.handoverTo = null;
+    this.startHb();
+    this.connect();
+  },
+  startHb() {
     clearInterval(this.hb);
     this.hb = setInterval(() => {
       if (!this.joined || this.closing) return;
       this.send({ t: 'hb' });
-      if (Date.now() - this.last > 15000 && this.conn) this.failed('timeout');
+      if (Date.now() - this.last > 8000 && this.conn) this.failed('timeout');
     }, 3000);
+  },
+  // used by a host that stepped down: reconnect to the room as a normal player keeping the same seat
+  resume(code, pid) {
+    this.cleanup();
+    G.mode = 'client'; G.pending = false;
+    this.code = code; this.hostId = PEER_PREFIX + code; this.pid = pid;
+    this.closing = false; this.joined = true; this.retry = 0; this.lostAt = 0; this.handoverTo = null; this.state = V.s;
+    this.startHb();
+    busy('Rejoining the room…', () => this.leave());
     this.connect();
+  },
+  // where this player stands in the line of successors (-1 = not a candidate)
+  succRank() {
+    const m = this.meta; if (!m || !this.pid) return -1;
+    const banned = Array.isArray(m.banned) ? m.banned : [], list = [];
+    const add = p => { if (typeof p === 'string' && p && p !== m.host && !list.includes(p) && !banned.includes(p)) list.push(p); };
+    if (this.handoverTo) add(this.handoverTo);
+    // players who exited to watch are still connected and can host; players who left are marked offline
+    if (m.phase === 'game' && Array.isArray(m.seats)) m.seats.forEach((p, k) => { if (!(Array.isArray(m.presence) && m.presence[k] === false)) add(p); });
+    (m.order || []).forEach(add);
+    return list.indexOf(this.pid);
+  },
+  takeOver() {
+    const code = this.code, meta = Object.assign({}, this.meta), pid = this.pid, st = this.state, left = this.handoverTo === pid ? meta.host : null;
+    // our own game state is always current even if the last snapshot from the host was a little older
+    if (this.phase === 'game' && validState(st)) { meta.phase = 'game'; if (!Array.isArray(meta.seats) || meta.seats.length !== st.pl.length) meta.seats = this.seats.slice(); }
+    this.closing = true; this.token++;
+    clearTimeout(this.connTimer); clearTimeout(this.relayT); clearInterval(this.hb); this.hb = 0;
+    this.cleanupPeer();
+    this.joined = false; this.lostAt = 0; this.handoverTo = null; this.meta = null; this.state = null;
+    busyOff();
+    Host.adopt(code, meta, pid, st, left);
   },
   // Tries a direct WebRTC link and, if that isn't up within 2s, the relay too; whichever opens first is used.
   connect() {
@@ -2116,13 +2645,18 @@ const Client = {
       conn.on('close', () => fail('closed'));
       conn.on('error', () => fail('closed'));
       this.last = Date.now();
-      send(conn, { t: 'hello', cid: CID, name: myName(), look: store.get('cr_look', null) });
+      send(conn, { t: 'hello', cid: CID, name: myName(), look: store.get('cr_look', null), pid: this.pid || '' });
     };
     const settle = () => { if (!done && directDead && relayDead) { done = true; fail(relayWhy, relayWhy === 'notfound'); } };
     const startRelay = () => {
       if (relayOn || done || token !== this.token) return;
       relayOn = true;
-      this.stopRelay = relayConnect(this.code, win, why => { relayDead = true; relayWhy = why; settle(); });
+      this.stopRelay = relayConnect(this.code, win, why => {
+        relayDead = true; relayWhy = why;
+        // every host listens on the relay, so 'nobody answered there' is final even if the direct attempt is still hanging
+        if (why === 'notfound' && !done) { done = true; if (this.peer) { try { this.peer.destroy(); } catch (e) {} this.peer = null; } fail('notfound', true); return; }
+        settle();
+      });
     };
     if (window.Peer && !store.get('cr_force_relay', false)) {
       let peer = null;
@@ -2163,12 +2697,17 @@ const Client = {
       show('online'); $('#join-err').textContent = netMsg(why);
       return;
     }
-    if (this.retry++ < 8 && !(fatal && this.retry > 4)) {
-      busy(`Connection lost. Reconnecting… (${this.retry})`, () => this.leave());
-      setTimeout(() => { if (!this.closing) this.connect(); }, Math.min(800 * this.retry, 4000));
+    if (!this.lostAt) this.lostAt = Date.now();
+    // brokers answered but nobody hosts the room any more: the next player in line becomes host
+    const rank = this.succRank();
+    if (rank >= 0 && (this.handoverTo === this.pid || (why === 'notfound' && Date.now() - this.lostAt >= rank * 25000))) { this.takeOver(); return; }
+    const max = this.meta ? 30 : 8;
+    if (this.retry++ < max && !(fatal && !this.meta && this.retry > 4)) {
+      busy(this.handoverTo || (this.meta && why === 'notfound') ? 'Host left — switching to the new host…' : `Connection lost. Reconnecting… (${this.retry})`, () => this.leave());
+      setTimeout(() => { if (!this.closing) this.connect(); }, Math.min(800 * this.retry, 3000));
     } else {
       this.leave(true);
-      dialog('Disconnected', 'Lost connection to the host.', 'OK');
+      dialog('Disconnected', 'Lost connection to the room.', 'OK');
     }
   },
   send(msg) { send(this.conn, msg); },
@@ -2179,7 +2718,7 @@ const Client = {
     this.token++; clearTimeout(this.connTimer); clearTimeout(this.relayT); clearInterval(this.hb); this.hb = 0;
     this.peer = null; this.conn = null; this.stopRelay = null;
     setTimeout(() => { try { if (c) c.close(); } catch (e) {} try { if (p) p.destroy(); } catch (e) {} try { if (r) r(); } catch (e) {} }, 250);
-    this.joined = false; this.state = null;
+    this.joined = false; this.state = null; this.meta = null; this.lostAt = 0; this.handoverTo = null;
     goHome();
   },
   move(i) {
@@ -2200,8 +2739,9 @@ const Client = {
     if (!d || typeof d !== 'object') return;
     switch (d.t) {
       case 'welcome':
-        this.joined = true; this.retry = 0; this.last = Date.now();
+        this.joined = true; this.retry = 0; this.last = Date.now(); this.lostAt = 0; this.handoverTo = null;
         this.pid = String(d.pid || '');
+        if (Vc.on && Vc.peer && Vc.peer.id) this.send({ t: 'vjoin', id: Vc.peer.id });
         ss.set('cr_room', this.code);
         if (normCode(new URLSearchParams(location.search).get('room')) !== this.code) history.replaceState(null, '', '?room=' + this.code);
         busyOff();
@@ -2209,7 +2749,7 @@ const Client = {
       case 'lobby':
         if (!Array.isArray(d.players)) return;
         G.pending = false; this.phase = 'lobby'; this.state = null; G.mySeat = -1;
-        renderLobby(d.players.slice(0, 8).map((p, k) => ({ pid: String(p.pid), name: cleanName(p.name) || 'Player', c: validC(p.c) ? p.c : k, av: validAv(p.av) ? p.av : AVATARS[0] })), gridById(d.grid).id, false, this.code, TIMERS.includes(d.timer) ? d.timer : 0, d.undo !== false, d.teams === true);
+        renderLobby(d.players.slice(0, 8).map((p, k) => ({ pid: String(p.pid), name: cleanName(p.name) || 'Player', c: validC(p.c) ? p.c : k, av: validAv(p.av) ? p.av : AVATARS[0], t: p.t === 1 ? 1 : 0, ready: !!p.ready })), gridById(d.grid).id, false, this.code, TIMERS.includes(d.timer) ? d.timer : 0, d.undo !== false, d.teams === true, String(d.host || ''));
         if (screen !== 'lobby') openLobby();
         break;
       case 'start':
@@ -2256,6 +2796,18 @@ const Client = {
       case 'chat': chatAdd(d.m); break;
       case 'chatlog': chatReset(d.list); break;
       case 'emoji': showEmoji(d.e, d.name, d.ci); break;
+      case 'meta': if (d.meta && typeof d.meta === 'object' && Array.isArray(d.meta.order)) this.meta = d.meta; break;
+      case 'handover': {
+        if (!d.meta || !Array.isArray(d.meta.order)) return;
+        this.meta = d.meta; this.handoverTo = String(d.to || '');
+        if (this.handoverTo === this.pid) this.takeOver();
+        else { this.lostAt = Date.now(); toast(`👑 ${cleanName((d.meta.names || {})[this.handoverTo]) || 'Another player'} is the host now`, 3000); }
+        break;
+      }
+      case 'votes': updVotes(d); break;
+      case 'note': if (typeof d.text === 'string' && d.text) toast(d.text.slice(0, 80), 2000); break;
+      case 'vlist': Vc.sync(d.ids); break;
+      case 'talk': if (typeof d.pid === 'string') setTalking(d.pid, !!d.on); break;
       case 'bye': {
         const why = { closed: 'The host closed the room.', kicked: 'The host removed you from the room.', full: netMsg('full'), dup: 'You joined this room from another tab.' }[d.r] || 'Disconnected.';
         const wasJoined = this.joined;
@@ -2415,7 +2967,7 @@ refreshResume();
   if (ss.get('cr_room') === room) Client.join(room);
   else if (!store.get('cr_name', '')) setTimeout(() => $('#s-online .name-in').focus(), 300);
 })();
-window.__cr = { V, G, L, Host, Client, CID, chatFit, setTheme, resultCard, RelayHost };
+window.__cr = { V, G, L, Host, Client, CID, chatFit, setTheme, resultCard, RelayHost, Vc, Chat };
 </script>
 </body>
 </html>
