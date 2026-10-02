@@ -1,6 +1,6 @@
-# Chain Reaction
+# Atom Burst: Chain Reaction
 
-The explosive strategy game — in a single HTML file. **by Divyanshu**
+The explosive chain-reaction strategy game — in a single HTML file. **by Divyanshu**
 
 **▶ Play:** https://di-ivyanshu.github.io/chain-reaction/
 
@@ -19,6 +19,7 @@ The explosive strategy game — in a single HTML file. **by Divyanshu**
 - **Themes** — Neon, Matte Dark and Matte Light.
 - **Install as an app** (PWA) — add to your home screen; local and computer games work offline.
 - **3-2-1 kick-off countdown**, **WhatsApp invite** button, **vibration patterns** (your turn, big chains, win) and **avatar reactions**.
+- **Mute / report players**, Android back-button support, and a [privacy policy](https://di-ivyanshu.github.io/chain-reaction/privacy.html).
 - Auto-reconnect on refresh, spectators, rematch, emoji reactions, sound, mobile friendly.
 
 ## Rules

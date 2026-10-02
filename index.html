@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070914">
 <meta name="author" content="Divyanshu">
-<title>Chain Reaction — Play online with friends</title>
-<meta name="description" content="Chain Reaction: the explosive strategy game. Play online with friends using a link, locally, or against the computer.">
-<meta property="og:title" content="Chain Reaction — join my game!">
+<title>Atom Burst — Play online with friends</title>
+<meta name="description" content="Atom Burst: the explosive chain-reaction strategy game. Play online with friends using a link, locally, or against the computer.">
+<meta property="og:title" content="Atom Burst — join my game!">
 <meta property="og:description" content="Explode. Capture. Conquer. Tap the link to join the room.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='.35' cy='.3'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.3' stop-color='%23ff8aa0'/%3E%3Cstop offset='1' stop-color='%23c0102f'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='26' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cdefs%3E%3CradialGradient%20id%3D%27g%27%20cx%3D%27.35%27%20cy%3D%27.3%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23fff%27%2F%3E%3Cstop%20offset%3D%27.3%27%20stop-color%3D%27%23ff8aa0%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23c0102f%27%2F%3E%3C%2FradialGradient%3E%3C%2Fdefs%3E%3Cg%20fill%3D%27none%27%20stroke-width%3D%273.5%27%3E%3Cellipse%20cx%3D%2732%27%20cy%3D%2732%27%20rx%3D%2728%27%20ry%3D%2710%27%20stroke%3D%27%2322e1f0%27%2F%3E%3Cellipse%20cx%3D%2732%27%20cy%3D%2732%27%20rx%3D%2728%27%20ry%3D%2710%27%20stroke%3D%27%232bdc76%27%20transform%3D%27rotate(60%2032%2032)%27%2F%3E%3Cellipse%20cx%3D%2732%27%20cy%3D%2732%27%20rx%3D%2728%27%20ry%3D%2710%27%20stroke%3D%27%23b25bff%27%20transform%3D%27rotate(-60%2032%2032)%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2732%27%20cy%3D%2732%27%20r%3D%2710%27%20fill%3D%27url(%23g)%27%2F%3E%3C%2Fsvg%3E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Chain Reaction">
+<meta name="apple-mobile-web-app-title" content="Atom Burst">
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://0.peerjs.com" crossorigin>
 <style>
@@ -28,11 +28,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding:max(20px,env(safe-area-inset-top)) 18px max(20px,env(safe-area-inset-bottom));opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .12s ease,transform .12s ease,visibility 0s linear .12s}
 .screen.on{opacity:1;visibility:visible;transform:none;transition:opacity .22s ease .08s,transform .22s ease .08s,visibility 0s}
 .wrap{width:100%;max-width:440px;margin:auto 0;display:flex;flex-direction:column;gap:14px}
-.logo{width:96px;height:96px;margin:0 auto 2px;position:relative;animation:spin 6s linear infinite}
-.logo i{position:absolute;width:42px;height:42px;border-radius:50%;left:27px;top:27px}
-.logo i:nth-child(1){background:radial-gradient(circle at 35% 30%,#fff 0 6%,#ff8aa0 20%,#ff3b5c 55%,#7a0c20);transform:translate(0,-20px);box-shadow:0 0 26px rgba(255,59,92,.55)}
-.logo i:nth-child(2){background:radial-gradient(circle at 35% 30%,#fff 0 6%,#8cf5b8 20%,#2bdc76 55%,#0a5a2c);transform:translate(-18px,11px);box-shadow:0 0 26px rgba(43,220,118,.5)}
-.logo i:nth-child(3){background:radial-gradient(circle at 35% 30%,#fff 0 6%,#9cc2ff 20%,#3d8bff 55%,#0c2f75);transform:translate(18px,11px);box-shadow:0 0 26px rgba(61,139,255,.55)}
+.logo{width:112px;height:112px;margin:0 auto 2px}
+.logo svg{width:100%;height:100%;overflow:visible}
+.logo .orbits{transform-origin:50px 50px;animation:spin 14s linear infinite}
+.logo ellipse{fill:none;stroke-width:3.2}
+.logo .o1{stroke:#22e1f0;filter:drop-shadow(0 0 3px #22e1f0)}.logo .e1{fill:#22e1f0;filter:drop-shadow(0 0 4px #22e1f0)}
+.logo .o2{stroke:#2bdc76;filter:drop-shadow(0 0 3px #2bdc76)}.logo .e2{fill:#2bdc76;filter:drop-shadow(0 0 4px #2bdc76)}
+.logo .o3{stroke:#b25bff;filter:drop-shadow(0 0 3px #b25bff)}.logo .e3{fill:#b25bff;filter:drop-shadow(0 0 4px #b25bff)}
+.logo .nuc{fill:url(#nucg);filter:drop-shadow(0 0 8px rgba(255,59,92,.7))}
 @keyframes spin{to{transform:rotate(360deg)}}
 .title{text-align:center;font-weight:900;letter-spacing:.14em;font-size:clamp(30px,9vw,44px);line-height:1.02;padding-left:.14em}
 .title span{background:linear-gradient(90deg,#ff3b5c,#ffd23d,#2bdc76,#22c6f0,#b25bff);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -84,6 +87,12 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .tagx{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--card2);color:var(--muted);flex:none}
 .kick{width:28px;height:28px;border-radius:8px;color:var(--muted);flex:none}
 .kick:hover{background:rgba(255,59,92,.15);color:#ff6b81}
+.no-teams .teams-h,.no-teams #l-teams,.no-teams #loc-teams{display:none!important}
+.opts{width:28px;height:28px;border-radius:8px;color:var(--muted);flex:none;font-weight:900;letter-spacing:1px}
+.opts:hover{background:var(--hov);color:var(--text)}
+.muted-tag{font-size:11px;flex:none}
+.chip.mute{opacity:.75}
+.chip.mute .nm:after{content:" 🔇"}
 .seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--segbg);padding:4px;border-radius:12px}
 .seg button{height:46px;border-radius:9px;font-weight:700;font-size:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;transition:background .15s,color .15s}
 .seg button small{font-weight:500;font-size:11px;opacity:.8}
@@ -189,7 +198,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(43,220,118,.14);color:#2bdc76;white-space:nowrap}
 .pill.bad{background:rgba(255,59,92,.15);color:#ff6b81}
 @media (hover:none){.btn:hover,.icon:hover{background:var(--card2)}.btn.primary:hover{filter:none}.btn.ghost:hover{background:transparent}}
-@media (prefers-reduced-motion:reduce){.logo,.win-orb{animation:none}.screen{transition:opacity .15s,visibility 0s}}
+@media (prefers-reduced-motion:reduce){.logo .orbits,.win-orb{animation:none}.screen{transition:opacity .15s,visibility 0s}}
 /* colour & avatar picker, teams, quick chat */
 .look{width:34px;height:34px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:18px;line-height:1;flex:none}
 button.look{cursor:pointer;transition:transform .12s}
@@ -225,11 +234,12 @@ body.flat .btn.primary:hover{filter:none;opacity:.9}
 body.flat .btn.danger{background:#d64545;color:#fff}
 body.flat .title span,body.flat .bigcode,body.flat .by a{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--text)}
 body.flat .title{color:var(--muted)}
-body.flat .logo{animation-duration:12s}
-body.flat .logo i{box-shadow:none}
-body.flat .logo i:nth-child(1){background:var(--p0)}
-body.flat .logo i:nth-child(2){background:var(--p1)}
-body.flat .logo i:nth-child(3){background:var(--p2)}
+body.flat .logo .orbits{animation-duration:24s}
+body.flat .logo ellipse,body.flat .logo circle{filter:none}
+body.flat .logo .o1{stroke:var(--p5)}body.flat .logo .e1{fill:var(--p5)}
+body.flat .logo .o2{stroke:var(--p1)}body.flat .logo .e2{fill:var(--p1)}
+body.flat .logo .o3{stroke:var(--p4)}body.flat .logo .e3{fill:var(--p4)}
+body.flat .logo .nuc{fill:var(--p0)}
 body.flat .dot,body.flat .chip i{box-shadow:none}
 body.flat .win-orb{background:var(--c);box-shadow:none}
 body.flat .msg.me span{background:var(--acc);color:var(--acc-t)}
@@ -293,9 +303,9 @@ body.t-paper .ready{color:#23804a}
 
 <section class="screen on" id="s-home">
   <div class="wrap">
-    <div class="logo" aria-hidden="true"><i></i><i></i><i></i></div>
-    <h1 class="title">CHAIN<br><span>REACTION</span></h1>
-    <p class="tag">Explode. Capture. Conquer.</p>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><radialGradient id="nucg" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="#ff8aa0"/><stop offset=".7" stop-color="#ff3b5c"/><stop offset="1" stop-color="#8a0f25"/></radialGradient></defs><g class="orbits"><ellipse class="o1" cx="50" cy="50" rx="42" ry="15"/><ellipse class="o2" cx="50" cy="50" rx="42" ry="15" transform="rotate(60 50 50)"/><ellipse class="o3" cx="50" cy="50" rx="42" ry="15" transform="rotate(-60 50 50)"/><circle class="e1" cx="89.5" cy="55.1" r="5"/><circle class="e2" cx="25.8" cy="28.2" r="5"/><circle class="e3" cx="28.4" cy="61.3" r="5"/></g><circle class="nuc" cx="50" cy="50" r="15"/></svg></div>
+    <h1 class="title">ATOM<br><span>BURST</span></h1>
+    <p class="tag">Chain Reaction · Explode. Capture. Conquer.</p>
     <p class="by">by <a href="https://github.com/Di-ivyanshu" target="_blank" rel="noopener">Divyanshu</a></p>
     <label class="field"><span>Your name</span><input class="in name-in" maxlength="16" placeholder="Enter your name" autocomplete="nickname" spellcheck="false"></label>
     <button class="btn primary" id="b-online">🌐 Play online with friends</button>
@@ -348,7 +358,7 @@ body.t-paper .ready{color:#23804a}
       <div class="seg" id="l-timer"></div>
       <h3>Undo</h3>
       <div class="seg two" id="l-undo"></div>
-      <h3>Teams</h3>
+      <h3 class="teams-h">Teams</h3>
       <div class="seg two" id="l-teams"></div>
     </div>
     <button class="btn ghost cbtn chat-open" data-n="0">💬 Chat with the room</button>
@@ -369,7 +379,7 @@ body.t-paper .ready{color:#23804a}
       <div class="seg" id="loc-grid"></div>
       <h3>Turn timer</h3>
       <div class="seg" id="loc-timer"></div>
-      <h3>Teams</h3>
+      <h3 class="teams-h">Teams</h3>
       <div class="seg two" id="loc-teams"></div>
     </div>
     <button class="btn primary" id="b-loc-start">Start game</button>
@@ -618,6 +628,20 @@ function randomMove(s) {
 
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
+// where player reports are sent (Play policy: apps with chat must let players report others)
+const REPORT_EMAIL = 'atomburst.app@gmail.com';
+// running inside the installed Android app (Trusted Web Activity) or as an installed web app
+// the Play Store app (Trusted Web Activity) opens with ?twa=1; remembered for the session so reloads and invite links keep app mode
+const IS_TWA = (() => {
+  const twa = document.referrer.startsWith('android-app://') || /[?&]twa=1\b/.test(location.search);
+  try { if (twa) sessionStorage.setItem('cr_twa', '1'); return sessionStorage.getItem('cr_twa') === '1'; } catch (e) { return twa; }
+})();
+const IN_APP = IS_TWA || matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const APP_NAME = 'Atom Burst';
+// team mode is website-only for now; the Play Store app plays without it
+const TEAMS_ON = !IS_TWA;
+// outside actions, swappable in tests
+const Ext = { mail(href) { location.href = href; } };
 const PALETTES = {
   neon: ['#ff3b5c', '#2bdc76', '#3d8bff', '#ffd23d', '#b25bff', '#22e1f0', '#ff8a2b', '#ff5bd1'],
   matte: ['#e5534b', '#57ab5a', '#539bf5', '#d4a72c', '#986ee2', '#39c5cf', '#e0823d', '#e275ad'],
@@ -705,8 +729,43 @@ function show(id) {
   screen = id;
   if (id === 'game') startLoop(); else stopLoop();
   chatFit();
+  if (id !== 'home') Back.arm();
 }
-function ov(id, on) { $('#ov-' + id).classList.toggle('on', on); }
+// Android back button / browser back: close what's open, otherwise ask before leaving a game or room
+const Back = {
+  armed: false, skip: false,
+  arm() { if (!this.armed) { history.pushState({ crBack: 1 }, ''); this.armed = true; } },
+  disarm() { if (this.armed) { this.armed = false; this.skip = true; history.back(); } }
+};
+// close the top-most popup; returns false when nothing was open
+function closeTop() {
+  if ($('#ov-confirm').classList.contains('on')) { if (dlgDone) dlgDone(false); return true; }
+  if (menuDone) { menuDone(null); return true; }
+  if (pick) { pick = null; ov('pick', false); return true; }
+  if ($('#ov-rules').classList.contains('on')) { ov('rules', false); return true; }
+  if (Chat.open) { chatToggle(false); return true; }
+  if ($('#ov-busy').classList.contains('on')) { if (busyCancel) $('#busy-cancel').click(); return true; }
+  return false;
+}
+window.addEventListener('popstate', () => {
+  if (Back.skip) { Back.skip = false; if (location.search && screen === 'home') history.replaceState(null, '', location.pathname); return; }
+  Back.armed = false;
+  // keep catching back presses while away from home or while something is still open
+  const keep = () => { if (screen !== 'home' || overlayOpen()) Back.arm(); };
+  if (closeTop()) { keep(); return; }
+  if (screen === 'home') return;
+  Back.arm();
+  if (screen === 'game') { $('#g-menu').click(); return; }
+  if (screen === 'lobby') { $('#lobby-back').click(); return; }
+  goHome();
+});
+function ov(id, on) {
+  $('#ov-' + id).classList.toggle('on', on);
+  if (id === 'count') return;
+  if (on) Back.arm();
+  else if (screen === 'home' && !overlayOpen()) Back.disarm();
+}
+function overlayOpen() { return !!document.querySelector('.ov.on:not(#ov-count)') || (typeof Chat !== 'undefined' && Chat.open); }
 function toast(msg, ms) {
   const box = $('#toasts');
   while (box.children.length > 1) box.firstChild.remove();
@@ -798,7 +857,7 @@ const V = {
   fly: [], flyT0: 0, flyDur: 1, rings: [], pops: new Map(), bad: null, hover: -1, down: -1,
   lineCol: [124, 92, 255], lineTarget: [124, 92, 255], lt: 0, queue: [], cur: null
 };
-const G = { mode: null, mySeat: -1, presence: null, pending: false, pendT: 0, idleKey: '', botT: 0, turnT: 0, turnEnd: 0, nextTl: 0, tsecShown: -1, talking: new Set(), myVote: false, myReady: false };
+const G = { mode: null, mySeat: -1, presence: null, pending: false, pendT: 0, idleKey: '', botT: 0, turnT: 0, turnEnd: 0, nextTl: 0, tsecShown: -1, talking: new Set(), myVote: false, myReady: false, muted: new Set() };
 
 // one orb image; neon = glossy with glow, matte themes = flat with soft light
 function makeOrb(hex, R, theme) {
@@ -1072,8 +1131,9 @@ function updateHUD() {
     const col = COLORS[p.c];
     const me = G.mode !== 'local' && k === G.mySeat;
     const off = G.mode !== 'local' && G.presence && G.presence[k] === false && !p.out;
-    const tap = G.mode === 'host' && k !== G.mySeat && !p.left;
-    h += `<div data-k="${k}" title="${tap ? 'Tap to kick' : ''}" class="chip${tap ? ' tap' : ''}${G.talking.has(seatPid(k)) ? ' talk' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${p.av ? `<span class="av${reactOf(k) ? ' pop' : ''}">${reactOf(k) || p.av}</span> ` : ''}${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null && !p.av ? ' 🤖' : ''}<span class="mic"> 🎙</span></span>${s.teams ? `<span class="team">${'AB'[p.t & 1]}</span>` : ''}<b>${counts[k]}</b></div>`;
+    const tap = (G.mode === 'host' || G.mode === 'client') && k !== G.mySeat && !p.left;
+    const muteC = G.mode !== 'local' && G.muted.has(seatPid(k));
+    h += `<div data-k="${k}" title="${tap ? 'Tap for player options' : ''}" class="chip${tap ? ' tap' : ''}${muteC ? ' mute' : ''}${G.talking.has(seatPid(k)) ? ' talk' : ''}${k === s.turn && s.winner < 0 ? ' on' : ''}${p.out ? ' out' : ''}${off ? ' off' : ''}" style="--c:${col};--cb:${rgba(col, .16)}"><i></i><span class="nm">${p.av ? `<span class="av${reactOf(k) ? ' pop' : ''}">${reactOf(k) || p.av}</span> ` : ''}${esc(p.name)}${me ? ' (you)' : ''}${p.bot != null && !p.av ? ' 🤖' : ''}<span class="mic"> 🎙</span></span>${s.teams ? `<span class="team">${'AB'[p.t & 1]}</span>` : ''}<b>${counts[k]}</b></div>`;
   });
   el.innerHTML = h;
   const on = el.querySelector('.chip.on');
@@ -1119,10 +1179,11 @@ function onIdle() {
     }
   } else if (s.turn === G.mySeat && s.moves > 0) {
     Snd.turn(); buzz([40, 60, 40]);
-    if (document.hidden) document.title = '● Your turn — Chain Reaction';
+    if (document.hidden) document.title = '● Your turn — ' + APP_NAME;
   }
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'Chain Reaction — Play online with friends'; });
+const PAGE_TITLE = document.title;
+document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = PAGE_TITLE; });
 
 /* ---------- input ---------- */
 function cellAt(e) {
@@ -1244,7 +1305,7 @@ if (!Array.isArray(LS.players)) LS.players = [];
 for (let k = 0; k < 8; k++) if (!LS.players[k] || typeof LS.players[k] !== 'object') LS.players[k] = { name: '', type: 'h' };
 LS.n = Math.min(8, Math.max(2, LS.n | 0));
 if (!TIMERS.includes(LS.timer)) LS.timer = 0;
-LS.teams = LS.teams === true;
+LS.teams = TEAMS_ON && LS.teams === true;
 LS.players.forEach((p, k) => { if (p.t !== 0 && p.t !== 1) p.t = k & 1; });
 // every local player gets a unique colour and an avatar
 (() => {
@@ -1371,8 +1432,10 @@ function goHome() {
   V.queue.length = 0; V.cur = null;
   ss.del('cr_room');
   if (location.search) history.replaceState(null, '', location.pathname);
+  G.muted.clear();
   refreshResume();
   show('home');
+  Back.disarm();
 }
 document.querySelectorAll('[data-home]').forEach(b => b.onclick = goHome);
 $('#b-online').onclick = () => { $('#c-join').classList.remove('hl'); $('#join-err').textContent = ''; show('online'); loadPeer().catch(() => {}); };
@@ -1453,14 +1516,48 @@ $('#g-menu').onclick = async () => {
   else if (k === 'close') Host.close();
   else if (k === 'leave') Client.leave();
 };
-$('#g-chips').onclick = async e => {
-  if (G.mode !== 'host') return;
+$('#g-chips').onclick = e => {
+  if (G.mode !== 'host' && G.mode !== 'client') return;
   const c = e.target.closest('.chip.tap'); if (!c || !V.s) return;
   const k = +c.dataset.k, p = V.s.pl[k];
   if (!p || k === G.mySeat) return;
-  const r = await menu(p.name, 'Remove this player from the room? They won\'t be able to rejoin.', [{ k: 'kick', label: '🚫 Kick ' + p.name, cls: 'danger' }]);
-  if (r === 'kick' && G.mode === 'host') Host.kickSeat(k);
+  playerMenu(seatPid(k), p.name, () => Host.kickSeat(k));
 };
+/* ---------- mute & report players ---------- */
+function setMuted(pid, on) {
+  if (!pid) return;
+  if (on) G.muted.add(pid); else G.muted.delete(pid);
+  applyVoiceMutes();
+  if (screen === 'game') updateHUD();
+  if (screen === 'lobby' && G.lobby) renderLobbyAgain();
+}
+function applyVoiceMutes() {
+  for (const [pid, id] of Object.entries(Vc.ids || {})) { const a = Vc.audio.get(id); if (a) a.muted = G.muted.has(pid); }
+}
+function roomCode() { return G.mode === 'host' ? Host.code : Client.code; }
+function reportPlayer(pid, name) {
+  const recent = Chat.list.filter(m => m.pid === pid).slice(-5).map(m => `  "${m.text}"`).join('\n') || '  (no chat messages)';
+  const body = `Player report — ${APP_NAME}\n\nReported player: ${name} (id ${pid})\nRoom: ${roomCode()}\nReported by: ${myName()}\nTime: ${new Date().toISOString()}\n\nTheir recent messages:\n${recent}\n\nWhat happened (optional):\n`;
+  setMuted(pid, true);
+  if (REPORT_EMAIL) {
+    Ext.mail(`mailto:${REPORT_EMAIL}?subject=${encodeURIComponent('Player report: ' + name)}&body=${encodeURIComponent(body)}`);
+    toast(`🚩 ${name} is muted — send the email to finish the report`, 3500);
+  } else {
+    copyText(body).then(okc => toast(okc ? `🚩 ${name} muted — report copied` : `🚩 ${name} muted`, 3000));
+  }
+}
+async function playerMenu(pid, name, kick) {
+  const muted = G.muted.has(pid), host = G.mode === 'host';
+  const items = [
+    { k: 'mute', label: muted ? `🔊 Unmute ${name}` : `🔇 Mute ${name}` },
+    { k: 'report', label: `🚩 Report ${name}` }
+  ];
+  if (host && kick) items.push({ k: 'kick', label: `🚫 Kick ${name}`, cls: 'danger' });
+  const r = await menu(name, muted ? 'Muted: you don\'t see or hear them.' : 'Mute hides their chat, voice lines, emojis and voice — only for you.', items);
+  if (r === 'mute') { setMuted(pid, !muted); toast(muted ? `🔊 ${name} unmuted` : `🔇 ${name} muted`, 1600); }
+  else if (r === 'report') reportPlayer(pid, name);
+  else if (r === 'kick' && G.mode === 'host') kick();
+}
 $('#g-foot').innerHTML = EMOJIS.map(e => `<button data-e="${e}" aria-label="React ${e}">${e}</button>`).join('') + '<button class="cbtn chat-open" data-n="0" aria-label="Open chat">💬</button><button class="ptt" id="g-ptt" aria-label="Voice chat: tap to join, then hold to talk" title="Voice chat — hold to talk (or hold Space)">🎙</button>';
 let lastEmoji = 0;
 $('#g-foot').onclick = e => {
@@ -1492,6 +1589,7 @@ function cleanMsg(m) {
 function chatAdd(m, silent) {
   m = cleanMsg(m); if (!m) return;
   Chat.list.push(m);
+  if (G.muted.has(m.pid)) return;
   const box = $('#chat-list');
   const empty = box.querySelector('.chat-empty'); if (empty) empty.remove();
   box.append(chatMsgEl(m));
@@ -1650,6 +1748,7 @@ const Vc = {
       let a = this.audio.get(call.peer);
       if (!a) { a = new Audio(); a.autoplay = true; a.playsInline = true; this.audio.set(call.peer, a); }
       a.srcObject = s; a.play().catch(() => {});
+      applyVoiceMutes();
     });
     call.on('close', () => {
       if (this.calls.get(call.peer) === call) this.calls.delete(call.peer);
@@ -1720,13 +1819,14 @@ function updPtt() {
 const reacts = new Map();
 function reactOf(k) { const r = reacts.get(seatPid(k)); return r && r.until > Date.now() ? r.e : ''; }
 function avatarReact(pid, e) {
-  if (!pid || screen !== 'game') return;
+  if (!pid || screen !== 'game' || G.muted.has(pid)) return;
   clearTimeout((reacts.get(pid) || {}).t);
   reacts.set(pid, { e, until: Date.now() + 1700, t: setTimeout(() => { reacts.delete(pid); updateHUD(); }, 1750) });
   updateHUD();
 }
 function showEmoji(e, name, ci, pid) {
   if (screen !== 'game' || !EMOJIS.includes(e)) return;
+  if (typeof pid === 'string' && G.muted.has(pid)) return;
   avatarReact(typeof pid === 'string' ? pid : '', e);
   const box = $('#g-float');
   if (box.children.length > 14) box.firstChild.remove();
@@ -1961,7 +2061,7 @@ function relayConnect(code, onOpen, onFail) {
 
 let lobbySeen = new Set();
 function renderLobby(players, grid, isHost, code, timer, undo, teams, hostPid) {
-  G.lobby = players; G.hostPid = hostPid;
+  G.lobby = players; G.hostPid = hostPid; G.lobbyArgs = [players, grid, isHost, code, timer, undo, teams, hostPid];
   const mine = myPid();
   $('#l-code').textContent = code;
   $('#l-link').value = roomLink(code);
@@ -1970,7 +2070,7 @@ function renderLobby(players, grid, isHost, code, timer, undo, teams, hostPid) {
     const me = p.pid === mine, isH = p.pid === hostPid;
     const look = me ? `<button class="look mine" data-mylook style="--c:${COLORS[p.c]}" aria-label="Change your colour and avatar" title="Change colour & avatar">${p.av}</button>` : `<span class="look" style="--c:${COLORS[p.c]}">${p.av}</span>`;
     const team = !teams ? '' : (me || isHost) ? `<button class="team" data-team="${esc(p.pid)}" title="Tap to switch team">${'AB'[p.t & 1]}</button>` : `<span class="team">${'AB'[p.t & 1]}</span>`;
-    return `<li class="${lobbySeen.has(p.pid) ? '' : 'new'}">${look}<span class="nm">${esc(p.name)}</span>${team}${p.ready && !isH ? '<span class="ready">✓ READY</span>' : ''}${isH ? '<span class="tagx">HOST</span>' : ''}${me ? '<span class="tagx">YOU</span>' : ''}${isHost && !me ? `<button class="kick" data-kick="${esc(p.pid)}" aria-label="Remove player">✕</button>` : ''}</li>`;
+    return `<li class="${lobbySeen.has(p.pid) ? '' : 'new'}">${look}<span class="nm">${esc(p.name)}</span>${team}${p.ready && !isH ? '<span class="ready">✓ READY</span>' : ''}${isH ? '<span class="tagx">HOST</span>' : ''}${me ? '<span class="tagx">YOU</span>' : ''}${G.muted.has(p.pid) ? '<span class="muted-tag" title="Muted">🔇</span>' : ''}${!me ? `<button class="opts" data-opts="${esc(p.pid)}" aria-label="Player options" title="Mute or report">⋯</button>` : ''}${isHost && !me ? `<button class="kick" data-kick="${esc(p.pid)}" aria-label="Remove player">✕</button>` : ''}</li>`;
   }).join('') +
     (players.length < 2 ? '<li class="muted" style="justify-content:center">Waiting for friends to join…</li>' : '');
   lobbySeen = new Set(players.map(p => p.pid));
@@ -2011,6 +2111,7 @@ function renderLobby(players, grid, isHost, code, timer, undo, teams, hostPid) {
   $('#l-wait').textContent = inList ? 'Tap Ready — the host starts the game when everyone is in.' : "Lobby is full — you'll watch the next game.";
 }
 function openLobby() { ov('win', false); clearConfetti(); busyOff(); show('lobby'); }
+function renderLobbyAgain() { if (G.lobbyArgs) renderLobby(...G.lobbyArgs); }
 $('#l-teams').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.teams = b.dataset.tm === '1'; Host.pushLobby(); } };
 function openMyLook() {
   const pl = G.lobby || [], mine = myPid(), me = pl.find(p => p.pid === mine);
@@ -2031,6 +2132,12 @@ $('#l-timer').onclick = e => { const b = e.target.closest('button'); if (b && G.
 $('#l-grid').onclick = e => { const b = e.target.closest('button'); if (b && G.mode === 'host') { Host.grid = b.dataset.g; Host.pushLobby(); } };
 $('#l-players').onclick = e => {
   if (e.target.closest('[data-mylook]')) { openMyLook(); return; }
+  const ob = e.target.closest('[data-opts]');
+  if (ob) {
+    const pid = ob.dataset.opts, p = (G.lobby || []).find(x => x.pid === pid); if (!p) return;
+    playerMenu(pid, p.name, () => Host.kick(pid));
+    return;
+  }
   const tb = e.target.closest('[data-team]');
   if (tb) {
     const pid = tb.dataset.team, p = (G.lobby || []).find(x => x.pid === pid); if (!p) return;
@@ -2055,10 +2162,10 @@ function showCount() {
 }
 $('#b-copy').onclick = async () => { toast(await copyText($('#l-link').value) ? 'Invite link copied!' : 'Copy failed — select the link manually'); };
 $('#l-code').onclick = async () => { toast(await copyText($('#l-code').textContent) ? 'Room code copied!' : 'Copy failed'); };
-function inviteText(code) { return `🎮 Join my Chain Reaction game!\nRoom code: ${code}\n👉 ${roomLink(code)}`; }
+function inviteText(code) { return `🎮 Join my ${APP_NAME} game!\nRoom code: ${code}\n👉 ${roomLink(code)}`; }
 $('#b-share').onclick = async () => {
   const url = $('#l-link').value, code = $('#l-code').textContent;
-  if (navigator.share) { try { await navigator.share({ title: 'Chain Reaction', text: `🎮 Join my Chain Reaction game! Room code: ${code}`, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+  if (navigator.share) { try { await navigator.share({ title: APP_NAME, text: `🎮 Join my ${APP_NAME} game! Room code: ${code}`, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
   toast(await copyText(inviteText(code)) ? 'Invite message copied — paste it anywhere' : 'Copy failed');
 };
 $('#b-wa').onclick = () => {
@@ -2095,7 +2202,7 @@ const Host = {
     this.timer = store.get('cr_timer', 30);
     if (!TIMERS.includes(this.timer)) this.timer = 30;
     this.allowUndo = store.get('cr_undo', true) !== false;
-    this.teams = store.get('cr_teams', false) === true;
+    this.teams = TEAMS_ON && store.get('cr_teams', false) === true;
     this.order = [CID];
     const pref = store.get('cr_look', null) || {};
     this.looks.set(CID, { c: validC(pref.c) ? pref.c : 0, av: validAv(pref.av) ? pref.av : AVATARS[Math.random() * AVATARS.length | 0] });
@@ -2216,7 +2323,7 @@ const Host = {
     }
     const set = meta.settings || {};
     this.grid = gridById(set.grid).id; this.timer = TIMERS.includes(set.timer) ? set.timer : 30;
-    this.allowUndo = set.undo !== false; this.teams = set.teams === true;
+    this.allowUndo = set.undo !== false; this.teams = TEAMS_ON && set.teams === true;
     this.bannedPids = new Set(Array.isArray(meta.banned) ? meta.banned : []);
     this.skips = Array.isArray(meta.skips) ? meta.skips.slice() : [];
     this.chatLog = Chat.list.slice(-50);
@@ -2934,7 +3041,7 @@ function resultCard(s) {
   g.textAlign = 'center'; g.textBaseline = 'alphabetic';
   g.fillStyle = muted; g.font = `800 32px ${font}`;
   if ('letterSpacing' in g) g.letterSpacing = '10px';
-  g.fillText('CHAIN REACTION', W / 2 + 5, 100);
+  g.fillText(APP_NAME.toUpperCase(), W / 2 + 5, 100);
   if ('letterSpacing' in g) g.letterSpacing = '0px';
   g.font = `110px ${font}`; g.fillStyle = text;
   g.fillText(s.teams ? '🏆' : (p.av || '🏆'), W / 2, 240);
@@ -2980,10 +3087,10 @@ async function shareResult() {
   if (!blob) { toast("Couldn't create the image"); return; }
   const file = new File([blob], 'chain-reaction-result.png', { type: 'image/png' });
   const p = s.pl[s.winner];
-  const text = (s.teams ? `${teamName(p.t)} won` : `${p.name} won`) + ` at Chain Reaction! Play: ${siteUrl()}`;
+  const text = (s.teams ? `${teamName(p.t)} won` : `${p.name} won`) + ` at ${APP_NAME}! Play: ${siteUrl()}`;
   if (navigator.canShare && navigator.share) {
     let ok = false; try { ok = navigator.canShare({ files: [file] }); } catch (e) {}
-    if (ok) { try { await navigator.share({ files: [file], title: 'Chain Reaction', text }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+    if (ok) { try { await navigator.share({ files: [file], title: APP_NAME, text }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
   }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = file.name;
@@ -3001,7 +3108,7 @@ function setTheme(id) {
   b.classList.toggle('flat', id !== 'neon');
   b.classList.toggle('t-matte', id === 'matte');
   b.classList.toggle('t-paper', id === 'paper');
-  ['--p0', '--p1', '--p2'].forEach((v, k) => b.style.setProperty(v, COLORS[k]));
+  COLORS.forEach((c, k) => b.style.setProperty('--p' + k, c));
   $('meta[name="theme-color"]').content = getComputedStyle(b).getPropertyValue('--bg').trim() || '#070914';
   store.set('cr_theme', id);
   V.spKey = ''; if (V.cs) buildSprites();
@@ -3015,9 +3122,15 @@ setTheme(store.get('cr_theme', 'neon'));
 let installEvt = null;
 const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; $('#b-install').classList.remove('hidden'); });
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (!IN_APP) $('#b-install').classList.remove('hidden'); });
 window.addEventListener('appinstalled', () => { installEvt = null; $('#b-install').classList.add('hidden'); toast('📲 Installed — find it on your home screen'); });
-if (isIOS && !isStandalone()) $('#b-install').classList.remove('hidden');
+if (isIOS && !isStandalone() && !IN_APP) $('#b-install').classList.remove('hidden');
+if (IN_APP) document.documentElement.classList.add('in-app');
+if (!TEAMS_ON) document.documentElement.classList.add('no-teams');
+if (IS_TWA) {
+  // drop the app-mode marker from the address so invite links stay clean
+  if (/[?&]twa=1\b/.test(location.search)) { const q = new URLSearchParams(location.search); q.delete('twa'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '')); }
+}
 $('#b-install').onclick = async () => {
   if (installEvt) {
     const e = installEvt; installEvt = null;
@@ -3042,7 +3155,7 @@ refreshResume();
   if (ss.get('cr_room') === room) Client.join(room);
   else if (!store.get('cr_name', '')) setTimeout(() => $('#s-online .name-in').focus(), 300);
 })();
-window.__cr = { V, G, L, Host, Client, CID, chatFit, setTheme, resultCard, RelayHost, Vc, Chat };
+window.__cr = { V, G, L, Host, Client, CID, chatFit, setTheme, resultCard, RelayHost, Vc, Chat, Ext, Back };
 </script>
 </body>
 </html>

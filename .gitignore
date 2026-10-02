@@ -1,2 +1,13 @@
 _test/
 node_modules/
+
+# Android build outputs and local files (never commit signing keys)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/*.apk
+android/*.aab
+android/*.idsig
+*.jks
+*.keystore
