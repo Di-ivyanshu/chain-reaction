@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070914">
 <meta name="author" content="Divyanshu">
-<title>Chain Reaction — Play online with friends</title>
-<meta name="description" content="Chain Reaction: the explosive strategy game. Play online with friends using a link, locally, or against the computer.">
-<meta property="og:title" content="Chain Reaction — join my game!">
+<title>Atom Burst — Play online with friends</title>
+<meta name="description" content="Atom Burst: the explosive chain-reaction strategy game. Play online with friends using a link, locally, or against the computer.">
+<meta property="og:title" content="Atom Burst — join my game!">
 <meta property="og:description" content="Explode. Capture. Conquer. Tap the link to join the room.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='.35' cy='.3'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.3' stop-color='%23ff8aa0'/%3E%3Cstop offset='1' stop-color='%23c0102f'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='26' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cdefs%3E%3CradialGradient%20id%3D%27g%27%20cx%3D%27.35%27%20cy%3D%27.3%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23fff%27%2F%3E%3Cstop%20offset%3D%27.3%27%20stop-color%3D%27%23ff8aa0%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23c0102f%27%2F%3E%3C%2FradialGradient%3E%3C%2Fdefs%3E%3Cg%20fill%3D%27none%27%20stroke-width%3D%273.5%27%3E%3Cellipse%20cx%3D%2732%27%20cy%3D%2732%27%20rx%3D%2728%27%20ry%3D%2710%27%20stroke%3D%27%2322e1f0%27%2F%3E%3Cellipse%20cx%3D%2732%27%20cy%3D%2732%27%20rx%3D%2728%27%20ry%3D%2710%27%20stroke%3D%27%232bdc76%27%20transform%3D%27rotate(60%2032%2032)%27%2F%3E%3Cellipse%20cx%3D%2732%27%20cy%3D%2732%27%20rx%3D%2728%27%20ry%3D%2710%27%20stroke%3D%27%23b25bff%27%20transform%3D%27rotate(-60%2032%2032)%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2732%27%20cy%3D%2732%27%20r%3D%2710%27%20fill%3D%27url(%23g)%27%2F%3E%3C%2Fsvg%3E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Chain Reaction">
+<meta name="apple-mobile-web-app-title" content="Atom Burst">
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://0.peerjs.com" crossorigin>
 <style>
@@ -28,11 +28,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding:max(20px,env(safe-area-inset-top)) 18px max(20px,env(safe-area-inset-bottom));opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .12s ease,transform .12s ease,visibility 0s linear .12s}
 .screen.on{opacity:1;visibility:visible;transform:none;transition:opacity .22s ease .08s,transform .22s ease .08s,visibility 0s}
 .wrap{width:100%;max-width:440px;margin:auto 0;display:flex;flex-direction:column;gap:14px}
-.logo{width:96px;height:96px;margin:0 auto 2px;position:relative;animation:spin 6s linear infinite}
-.logo i{position:absolute;width:42px;height:42px;border-radius:50%;left:27px;top:27px}
-.logo i:nth-child(1){background:radial-gradient(circle at 35% 30%,#fff 0 6%,#ff8aa0 20%,#ff3b5c 55%,#7a0c20);transform:translate(0,-20px);box-shadow:0 0 26px rgba(255,59,92,.55)}
-.logo i:nth-child(2){background:radial-gradient(circle at 35% 30%,#fff 0 6%,#8cf5b8 20%,#2bdc76 55%,#0a5a2c);transform:translate(-18px,11px);box-shadow:0 0 26px rgba(43,220,118,.5)}
-.logo i:nth-child(3){background:radial-gradient(circle at 35% 30%,#fff 0 6%,#9cc2ff 20%,#3d8bff 55%,#0c2f75);transform:translate(18px,11px);box-shadow:0 0 26px rgba(61,139,255,.55)}
+.logo{width:112px;height:112px;margin:0 auto 2px}
+.logo svg{width:100%;height:100%;overflow:visible}
+.logo .orbits{transform-origin:50px 50px;animation:spin 14s linear infinite}
+.logo ellipse{fill:none;stroke-width:3.2}
+.logo .o1{stroke:#22e1f0;filter:drop-shadow(0 0 3px #22e1f0)}.logo .e1{fill:#22e1f0;filter:drop-shadow(0 0 4px #22e1f0)}
+.logo .o2{stroke:#2bdc76;filter:drop-shadow(0 0 3px #2bdc76)}.logo .e2{fill:#2bdc76;filter:drop-shadow(0 0 4px #2bdc76)}
+.logo .o3{stroke:#b25bff;filter:drop-shadow(0 0 3px #b25bff)}.logo .e3{fill:#b25bff;filter:drop-shadow(0 0 4px #b25bff)}
+.logo .nuc{fill:url(#nucg);filter:drop-shadow(0 0 8px rgba(255,59,92,.7))}
 @keyframes spin{to{transform:rotate(360deg)}}
 .title{text-align:center;font-weight:900;letter-spacing:.14em;font-size:clamp(30px,9vw,44px);line-height:1.02;padding-left:.14em}
 .title span{background:linear-gradient(90deg,#ff3b5c,#ffd23d,#2bdc76,#22c6f0,#b25bff);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -195,7 +198,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(43,220,118,.14);color:#2bdc76;white-space:nowrap}
 .pill.bad{background:rgba(255,59,92,.15);color:#ff6b81}
 @media (hover:none){.btn:hover,.icon:hover{background:var(--card2)}.btn.primary:hover{filter:none}.btn.ghost:hover{background:transparent}}
-@media (prefers-reduced-motion:reduce){.logo,.win-orb{animation:none}.screen{transition:opacity .15s,visibility 0s}}
+@media (prefers-reduced-motion:reduce){.logo .orbits,.win-orb{animation:none}.screen{transition:opacity .15s,visibility 0s}}
 /* colour & avatar picker, teams, quick chat */
 .look{width:34px;height:34px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:18px;line-height:1;flex:none}
 button.look{cursor:pointer;transition:transform .12s}
@@ -231,11 +234,12 @@ body.flat .btn.primary:hover{filter:none;opacity:.9}
 body.flat .btn.danger{background:#d64545;color:#fff}
 body.flat .title span,body.flat .bigcode,body.flat .by a{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--text)}
 body.flat .title{color:var(--muted)}
-body.flat .logo{animation-duration:12s}
-body.flat .logo i{box-shadow:none}
-body.flat .logo i:nth-child(1){background:var(--p0)}
-body.flat .logo i:nth-child(2){background:var(--p1)}
-body.flat .logo i:nth-child(3){background:var(--p2)}
+body.flat .logo .orbits{animation-duration:24s}
+body.flat .logo ellipse,body.flat .logo circle{filter:none}
+body.flat .logo .o1{stroke:var(--p5)}body.flat .logo .e1{fill:var(--p5)}
+body.flat .logo .o2{stroke:var(--p1)}body.flat .logo .e2{fill:var(--p1)}
+body.flat .logo .o3{stroke:var(--p4)}body.flat .logo .e3{fill:var(--p4)}
+body.flat .logo .nuc{fill:var(--p0)}
 body.flat .dot,body.flat .chip i{box-shadow:none}
 body.flat .win-orb{background:var(--c);box-shadow:none}
 body.flat .msg.me span{background:var(--acc);color:var(--acc-t)}
@@ -299,9 +303,9 @@ body.t-paper .ready{color:#23804a}
 
 <section class="screen on" id="s-home">
   <div class="wrap">
-    <div class="logo" aria-hidden="true"><i></i><i></i><i></i></div>
-    <h1 class="title">CHAIN<br><span>REACTION</span></h1>
-    <p class="tag">Explode. Capture. Conquer.</p>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><radialGradient id="nucg" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="#ff8aa0"/><stop offset=".7" stop-color="#ff3b5c"/><stop offset="1" stop-color="#8a0f25"/></radialGradient></defs><g class="orbits"><ellipse class="o1" cx="50" cy="50" rx="42" ry="15"/><ellipse class="o2" cx="50" cy="50" rx="42" ry="15" transform="rotate(60 50 50)"/><ellipse class="o3" cx="50" cy="50" rx="42" ry="15" transform="rotate(-60 50 50)"/><circle class="e1" cx="89.5" cy="55.1" r="5"/><circle class="e2" cx="25.8" cy="28.2" r="5"/><circle class="e3" cx="28.4" cy="61.3" r="5"/></g><circle class="nuc" cx="50" cy="50" r="15"/></svg></div>
+    <h1 class="title">ATOM<br><span>BURST</span></h1>
+    <p class="tag">Chain Reaction · Explode. Capture. Conquer.</p>
     <p class="by">by <a href="https://github.com/Di-ivyanshu" target="_blank" rel="noopener">Divyanshu</a></p>
     <label class="field"><span>Your name</span><input class="in name-in" maxlength="16" placeholder="Enter your name" autocomplete="nickname" spellcheck="false"></label>
     <button class="btn primary" id="b-online">🌐 Play online with friends</button>
@@ -633,7 +637,7 @@ const IS_TWA = (() => {
   try { if (twa) sessionStorage.setItem('cr_twa', '1'); return sessionStorage.getItem('cr_twa') === '1'; } catch (e) { return twa; }
 })();
 const IN_APP = IS_TWA || matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-const APP_NAME = IS_TWA ? 'Atom Burst' : 'Chain Reaction';
+const APP_NAME = 'Atom Burst';
 // team mode is website-only for now; the Play Store app plays without it
 const TEAMS_ON = !IS_TWA;
 // outside actions, swappable in tests
@@ -1175,10 +1179,11 @@ function onIdle() {
     }
   } else if (s.turn === G.mySeat && s.moves > 0) {
     Snd.turn(); buzz([40, 60, 40]);
-    if (document.hidden) document.title = '● Your turn — Chain Reaction';
+    if (document.hidden) document.title = '● Your turn — ' + APP_NAME;
   }
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = IS_TWA ? 'Atom Burst: Chain Reaction' : 'Chain Reaction — Play online with friends'; });
+const PAGE_TITLE = document.title;
+document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = PAGE_TITLE; });
 
 /* ---------- input ---------- */
 function cellAt(e) {
@@ -1532,7 +1537,7 @@ function applyVoiceMutes() {
 function roomCode() { return G.mode === 'host' ? Host.code : Client.code; }
 function reportPlayer(pid, name) {
   const recent = Chat.list.filter(m => m.pid === pid).slice(-5).map(m => `  "${m.text}"`).join('\n') || '  (no chat messages)';
-  const body = `Player report — Chain Reaction\n\nReported player: ${name} (id ${pid})\nRoom: ${roomCode()}\nReported by: ${myName()}\nTime: ${new Date().toISOString()}\n\nTheir recent messages:\n${recent}\n\nWhat happened (optional):\n`;
+  const body = `Player report — ${APP_NAME}\n\nReported player: ${name} (id ${pid})\nRoom: ${roomCode()}\nReported by: ${myName()}\nTime: ${new Date().toISOString()}\n\nTheir recent messages:\n${recent}\n\nWhat happened (optional):\n`;
   setMuted(pid, true);
   if (REPORT_EMAIL) {
     Ext.mail(`mailto:${REPORT_EMAIL}?subject=${encodeURIComponent('Player report: ' + name)}&body=${encodeURIComponent(body)}`);
@@ -2160,7 +2165,7 @@ $('#l-code').onclick = async () => { toast(await copyText($('#l-code').textConte
 function inviteText(code) { return `🎮 Join my ${APP_NAME} game!\nRoom code: ${code}\n👉 ${roomLink(code)}`; }
 $('#b-share').onclick = async () => {
   const url = $('#l-link').value, code = $('#l-code').textContent;
-  if (navigator.share) { try { await navigator.share({ title: 'Chain Reaction', text: `🎮 Join my Chain Reaction game! Room code: ${code}`, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+  if (navigator.share) { try { await navigator.share({ title: APP_NAME, text: `🎮 Join my ${APP_NAME} game! Room code: ${code}`, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
   toast(await copyText(inviteText(code)) ? 'Invite message copied — paste it anywhere' : 'Copy failed');
 };
 $('#b-wa').onclick = () => {
@@ -3085,7 +3090,7 @@ async function shareResult() {
   const text = (s.teams ? `${teamName(p.t)} won` : `${p.name} won`) + ` at ${APP_NAME}! Play: ${siteUrl()}`;
   if (navigator.canShare && navigator.share) {
     let ok = false; try { ok = navigator.canShare({ files: [file] }); } catch (e) {}
-    if (ok) { try { await navigator.share({ files: [file], title: 'Chain Reaction', text }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+    if (ok) { try { await navigator.share({ files: [file], title: APP_NAME, text }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
   }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = file.name;
@@ -3103,7 +3108,7 @@ function setTheme(id) {
   b.classList.toggle('flat', id !== 'neon');
   b.classList.toggle('t-matte', id === 'matte');
   b.classList.toggle('t-paper', id === 'paper');
-  ['--p0', '--p1', '--p2'].forEach((v, k) => b.style.setProperty(v, COLORS[k]));
+  COLORS.forEach((c, k) => b.style.setProperty('--p' + k, c));
   $('meta[name="theme-color"]').content = getComputedStyle(b).getPropertyValue('--bg').trim() || '#070914';
   store.set('cr_theme', id);
   V.spKey = ''; if (V.cs) buildSprites();
@@ -3123,9 +3128,6 @@ if (isIOS && !isStandalone() && !IN_APP) $('#b-install').classList.remove('hidde
 if (IN_APP) document.documentElement.classList.add('in-app');
 if (!TEAMS_ON) document.documentElement.classList.add('no-teams');
 if (IS_TWA) {
-  $('.title').innerHTML = 'ATOM<br><span>BURST</span>';
-  $('.tag').textContent = 'Chain Reaction · Explode. Capture. Conquer.';
-  document.title = 'Atom Burst: Chain Reaction';
   // drop the app-mode marker from the address so invite links stay clean
   if (/[?&]twa=1\b/.test(location.search)) { const q = new URLSearchParams(location.search); q.delete('twa'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '')); }
 }

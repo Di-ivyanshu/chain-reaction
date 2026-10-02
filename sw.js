@@ -1,6 +1,6 @@
-// Chain Reaction service worker: lets the game open offline (local & bot games) and makes repeat loads instant.
+// Atom Burst service worker: lets the game open offline (local & bot games) and makes repeat loads instant.
 // Own files are network-first so updates show up right away; the cached copy is only used when offline.
-const CACHE = 'cr-v1';
+const CACHE = 'cr-v2';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
